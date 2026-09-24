@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PlanList } from "@/components/plan-list";
 import { getCurrentUser } from "@/lib/auth";
 import { addComment, toggleLike } from "@/lib/actions";
-import { formatDate, timeAgo, yen } from "@/lib/format";
+import { formatDate, timeAgo, videoEmbedUrl, yen } from "@/lib/format";
 import {
   accessLevel,
   canView,
@@ -44,6 +44,7 @@ export default async function PostPage({ params }: PageProps<"/c/[slug]/posts/[i
 
         {unlocked ? (
           <>
+            {post.video_url && <VideoEmbed url={post.video_url} title={post.title} />}
             <div className="mt-6 whitespace-pre-wrap leading-relaxed">{post.body}</div>
             <div className="mt-8 flex items-center gap-4 border-t border-zinc-100 pt-4 text-sm">
               {user ? (
@@ -82,6 +83,20 @@ export default async function PostPage({ params }: PageProps<"/c/[slug]/posts/[i
       </article>
 
       {unlocked && <Comments postId={post.id} canComment={!!user} />}
+    </div>
+  );
+}
+
+function VideoEmbed({ url, title }: { url: string; title: string }) {
+  const embed = videoEmbedUrl(url);
+  if (!embed) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer" className="btn-outline mt-6">▶ 動画を見る</a>
+    );
+  }
+  return (
+    <div className="mt-6 aspect-video overflow-hidden rounded-xl bg-black">
+      <iframe src={embed} className="h-full w-full" allow="encrypted-media; picture-in-picture" allowFullScreen title={title} />
     </div>
   );
 }

@@ -20,6 +20,9 @@ export default async function Plans() {
             <div className="flex-1">
               <p className="font-bold">
                 {p.name} <span className="ml-1 text-sm font-normal text-zinc-500">{yen(p.price)}/月</span>
+                {p.trial_days > 0 && (
+                  <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700">{p.trial_days}日間無料</span>
+                )}
               </p>
               {p.description && <p className="text-sm text-zinc-600">{p.description}</p>}
             </div>

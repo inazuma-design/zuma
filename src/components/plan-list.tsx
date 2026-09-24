@@ -21,7 +21,14 @@ export function PlanList({
         return (
           <div key={p.id} className={`card p-4 ${current ? "ring-2 ring-pink-400" : ""}`}>
             <div className="flex items-baseline justify-between gap-2">
-              <h3 className="font-bold">{p.name}</h3>
+              <h3 className="font-bold">
+                {p.name}
+                {p.trial_days > 0 && !currentPlanId && (
+                  <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
+                    {p.trial_days}日間無料
+                  </span>
+                )}
+              </h3>
               <p className="whitespace-nowrap">
                 <span className="text-lg font-black">{yen(p.price)}</span>
                 <span className="text-xs text-zinc-500">/月</span>
@@ -35,7 +42,7 @@ export function PlanList({
                 <span className="btn w-full bg-pink-50 text-pink-600">加入中</span>
               ) : (
                 <Link href={`/c/${slug}/join/${p.id}`} className="btn-primary w-full">
-                  {currentPlanId ? "このプランに変更" : "このプランに入会する"}
+                  {currentPlanId ? "このプランに変更" : p.trial_days > 0 ? "無料で体験する" : "このプランに入会する"}
                 </Link>
               )}
             </div>

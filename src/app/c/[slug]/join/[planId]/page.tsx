@@ -16,6 +16,7 @@ export default async function JoinPage({ params }: PageProps<"/c/[slug]/join/[pl
   if (club.owner_id === user.id) redirect(`/c/${slug}`);
   const membership = getMembership(user.id, club.id);
   const isChange = isMembershipValid(membership) && membership!.status === "active";
+  const trial = !membership && plan.trial_days > 0;
 
   return (
     <div className="mx-auto mt-8 max-w-lg">
@@ -32,8 +33,8 @@ export default async function JoinPage({ params }: PageProps<"/c/[slug]/join/[pl
           </div>
         )}
         <div className="flex items-center justify-between p-5">
-          <span className="text-sm">お支払い金額（毎月自動更新）</span>
-          <span className="text-2xl font-black">{yen(plan.price)}</span>
+          <span className="text-sm">{trial ? "本日のお支払い" : "お支払い金額（毎月自動更新）"}</span>
+          <span className="text-2xl font-black">{trial ? "¥0" : yen(plan.price)}</span>
         </div>
       </div>
 
@@ -45,10 +46,18 @@ export default async function JoinPage({ params }: PageProps<"/c/[slug]/join/[pl
         </p>
         <input className="input" placeholder="4242 4242 4242 4242" defaultValue="4242 4242 4242 4242" readOnly />
         <ul className="list-disc space-y-1 pl-5 text-xs text-zinc-500">
-          <li>入会日から1ヶ月ごとに自動で更新・課金されます。</li>
+          {trial ? (
+            <li>
+              {plan.trial_days}日間の無料体験後、自動的に {yen(plan.price)}/月 の有料会員に移行します。体験期間中に退会すれば料金はかかりません。
+            </li>
+          ) : (
+            <li>入会日から1ヶ月ごとに自動で更新・課金されます。</li>
+          )}
           <li>マイページからいつでも退会できます。退会後も期間終了日までは閲覧可能です。</li>
         </ul>
-        <button className="btn-primary w-full">{isChange ? "プランを変更する" : `${yen(plan.price)}/月 で入会する`}</button>
+        <button className="btn-primary w-full">
+          {isChange ? "プランを変更する" : trial ? `${plan.trial_days}日間無料で体験する` : `${yen(plan.price)}/月 で入会する`}
+        </button>
       </form>
       <Link href={`/c/${slug}`} className="mt-4 block text-center text-sm text-zinc-500">キャンセル</Link>
     </div>

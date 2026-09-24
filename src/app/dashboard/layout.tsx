@@ -20,6 +20,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
           {[
             ["/dashboard", "概要・会員"],
             ["/dashboard/posts", "投稿"],
+            ["/dashboard/talk", "トーク"],
+            ["/dashboard/events", "イベント"],
+            ["/dashboard/shop", "ショップ"],
             ["/dashboard/plans", "プラン"],
             ["/dashboard/settings", "設定"],
           ].map(([href, label]) => (

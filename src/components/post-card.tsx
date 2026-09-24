@@ -26,7 +26,7 @@ export function PostCard({
           </span>
         )}
       </div>
-      <h3 className="mt-2 text-lg font-bold">{post.title}</h3>
+      <h3 className="mt-2 text-lg font-bold">{post.video_url && "▶ "}{post.title}</h3>
       {unlocked ? (
         <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-sm text-zinc-600">{post.body}</p>
       ) : (

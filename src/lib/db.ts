@@ -86,9 +86,96 @@ CREATE TABLE IF NOT EXISTS comments (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+CREATE TABLE IF NOT EXISTS talk_rooms (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  club_id INTEGER NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  min_price INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS talk_messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_id INTEGER NOT NULL REFERENCES talk_rooms(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  club_id INTEGER NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  starts_at TEXT NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'offline',
+  location TEXT NOT NULL DEFAULT '',
+  stream_url TEXT NOT NULL DEFAULT '',
+  capacity INTEGER NOT NULL DEFAULT 0,
+  min_price INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS event_entries (
+  event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (event_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  club_id INTEGER NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  price INTEGER NOT NULL,
+  stock INTEGER,
+  min_price INTEGER NOT NULL DEFAULT 0,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  club_id INTEGER NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  quantity INTEGER NOT NULL,
+  amount INTEGER NOT NULL,
+  shipping_address TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'paid',
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS points (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  club_id INTEGER NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
+  amount INTEGER NOT NULL,
+  reason TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_talk_messages_room ON talk_messages(room_id, id);
+CREATE INDEX IF NOT EXISTS idx_points_club_user ON points(club_id, user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_club ON posts(club_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_memberships_club ON memberships(club_id);
 `;
+
+/** Columns added after the first release; applied to existing databases on startup. */
+const COLUMN_MIGRATIONS: [table: string, column: string, ddl: string][] = [
+  ["plans", "trial_days", "INTEGER NOT NULL DEFAULT 0"],
+  ["posts", "video_url", "TEXT NOT NULL DEFAULT ''"],
+  ["memberships", "is_trial", "INTEGER NOT NULL DEFAULT 0"],
+];
+
+function migrate(db: Database.Database) {
+  for (const [table, column, ddl] of COLUMN_MIGRATIONS) {
+    const cols = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+    if (!cols.some((c) => c.name === column)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${ddl}`);
+  }
+}
 
 function seed(db: Database.Database) {
   const count = db.prepare("SELECT COUNT(*) AS n FROM users").get() as { n: number };
@@ -99,9 +186,23 @@ function seed(db: Database.Database) {
   const insertClub = db.prepare(
     "INSERT INTO clubs (owner_id, slug, name, tagline, description, category, theme) VALUES (?, ?, ?, ?, ?, ?, ?)",
   );
-  const insertPlan = db.prepare("INSERT INTO plans (club_id, name, price, description) VALUES (?, ?, ?, ?)");
+  const insertPlan = db.prepare(
+    "INSERT INTO plans (club_id, name, price, description, trial_days) VALUES (?, ?, ?, ?, ?)",
+  );
   const insertPost = db.prepare(
     "INSERT INTO posts (club_id, title, body, min_price, created_at) VALUES (?, ?, ?, ?, datetime('now', ?))",
+  );
+
+  const insertVideoPost = db.prepare(
+    "INSERT INTO posts (club_id, title, body, min_price, video_url, created_at) VALUES (?, ?, ?, ?, ?, datetime('now', '-3 days'))",
+  );
+  const insertRoom = db.prepare("INSERT INTO talk_rooms (club_id, name, description, min_price) VALUES (?, ?, ?, ?)");
+  const insertEvent = db.prepare(
+    `INSERT INTO events (club_id, title, description, starts_at, kind, location, stream_url, capacity, min_price)
+     VALUES (?, ?, ?, datetime('now', ?, 'start of day', '+11 hours'), ?, ?, ?, ?, ?)`,
+  );
+  const insertProduct = db.prepare(
+    "INSERT INTO products (club_id, name, description, price, stock, min_price) VALUES (?, ?, ?, ?, ?, ?)",
   );
 
   const clubs = [
@@ -156,13 +257,23 @@ function seed(db: Database.Database) {
       const userId = insertUser.run(c.email, c.name, pw).lastInsertRowid;
       const clubId = insertClub.run(userId, c.slug, c.club, c.tagline, c.description, c.category, c.theme)
         .lastInsertRowid;
-      for (const [name, price, desc] of c.plans) insertPlan.run(clubId, name, price, desc);
+      c.plans.forEach(([name, price, desc], i) => insertPlan.run(clubId, name, price, desc, i === 0 ? 7 : 0));
 
       const cheapest = c.plans[0][1];
       const top = c.plans[c.plans.length - 1][1];
       insertPost.run(clubId, "ファンクラブを開設しました！", "はじめまして！これからよろしくお願いします。この投稿はどなたでも読めます。", 0, "-10 days");
       insertPost.run(clubId, "今週のオフショット", "会員の皆さんだけに、今週の裏側をお届けします。いつもありがとう！", cheapest, "-5 days");
       insertPost.run(clubId, "特別コンテンツ", "上位プランの方限定の特別コンテンツです。いつも本当にありがとうございます。", top, "-1 days");
+      insertVideoPost.run(clubId, "限定動画：ご挨拶", "会員の皆さんへ動画でご挨拶です！", cheapest, "https://www.youtube.com/watch?v=aqz-KE-bpKQ");
+
+      insertRoom.run(clubId, "雑談ルーム", "会員同士で気軽におしゃべりしましょう", cheapest);
+      insertRoom.run(clubId, "プレミアム限定ルーム", "上位プラン会員だけのトークルーム", top);
+
+      insertEvent.run(clubId, "会員限定オンラインライブ", "自宅からの弾き語り配信です。参加登録した方に視聴URLをお知らせします。", "+7 days", "online", "", "https://www.youtube.com/watch?v=aqz-KE-bpKQ", 0, cheapest);
+      insertEvent.run(clubId, "ファンミーティング 2026", "年に一度のファンミーティング。上位プラン会員の方を優先してご案内します。", "+30 days", "offline", "東京都渋谷区（詳細は参加者にお知らせ）", "", 50, top);
+
+      insertProduct.run(clubId, "オリジナルアクリルスタンド", "描き下ろしイラストのアクリルスタンド", 1800, 100, 0);
+      insertProduct.run(clubId, "会員限定 サイン入りブロマイド", "会員限定・数量限定の直筆サイン入り", 3000, 20, cheapest);
     }
     insertUser.run("fan@example.com", "ファン太郎", pw);
   });
@@ -177,6 +288,7 @@ function open(): Database.Database {
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = ON");
   db.exec(SCHEMA);
+  migrate(db);
   seed(db);
   return db;
 }

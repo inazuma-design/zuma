@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Avatar } from "@/components/club-card";
 import { requireUser } from "@/lib/auth";
 import { cancelMembership } from "@/lib/actions";
-import { formatDate, yen } from "@/lib/format";
-import { isMembershipValid, listMyMemberships, processRenewals } from "@/lib/queries";
+import { formatDate, formatDateTime, yen } from "@/lib/format";
+import { isMembershipValid, listMyEvents, listMyMemberships, listMyOrders, processRenewals } from "@/lib/queries";
 
 export const metadata = { title: "マイページ" };
 
@@ -13,6 +13,8 @@ export default async function MyPage() {
   const memberships = listMyMemberships(user.id);
   const current = memberships.filter((m) => isMembershipValid(m));
   const past = memberships.filter((m) => !isMembershipValid(m));
+  const events = listMyEvents(user.id);
+  const orders = listMyOrders(user.id);
   const monthly = current.filter((m) => m.status === "active").reduce((s, m) => s + m.plan_price, 0);
 
   return (
@@ -46,11 +48,14 @@ export default async function MyPage() {
                 {m.plan_name}（{yen(m.plan_price)}/月）・{formatDate(m.started_at)}から
               </p>
               <p className="text-xs text-zinc-500">
-                {m.status === "active"
-                  ? `次回更新日: ${formatDate(m.current_period_end)}`
-                  : `退会手続き済み・${formatDate(m.current_period_end)}まで閲覧できます`}
+                {m.status !== "active"
+                  ? `退会手続き済み・${formatDate(m.current_period_end)}まで閲覧できます`
+                  : m.is_trial
+                    ? `無料体験中・${formatDate(m.current_period_end)}から${yen(m.plan_price)}/月`
+                    : `次回更新日: ${formatDate(m.current_period_end)}`}
               </p>
             </div>
+            <Link href={`/c/${m.club_slug}/card`} className="btn-outline text-xs">🪪 会員証</Link>
             {m.status === "active" ? (
               <form action={cancelMembership}>
                 <input type="hidden" name="clubId" value={m.club_id} />
@@ -62,6 +67,41 @@ export default async function MyPage() {
           </div>
         ))}
       </div>
+
+      {events.length > 0 && (
+        <>
+          <h2 className="mt-10 text-lg font-black">参加予定のイベント</h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            {events.map((e) => (
+              <li key={e.id}>
+                <Link href={`/c/${e.club_slug}/events/${e.id}`} className="card flex flex-wrap items-center gap-2 px-4 py-3 hover:shadow-md">
+                  <span className="font-bold">{e.kind === "online" ? "🎥" : "📍"} {e.title}</span>
+                  <span className="text-xs text-zinc-500">{e.club_name}</span>
+                  <span className="ml-auto text-xs font-bold text-pink-600">{formatDateTime(e.starts_at)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {orders.length > 0 && (
+        <>
+          <h2 className="mt-10 text-lg font-black">購入履歴</h2>
+          <ul className="card mt-3 divide-y divide-zinc-100 text-sm">
+            {orders.map((o) => (
+              <li key={o.id} className="flex flex-wrap items-center gap-2 px-4 py-3">
+                <span className="font-bold">{o.product_name} × {o.quantity}</span>
+                <span className="text-xs text-zinc-500">{o.club_name} ・ {formatDate(o.created_at)}</span>
+                <span className="ml-auto font-bold">{yen(o.amount)}</span>
+                <span className={`text-xs font-bold ${o.status === "shipped" ? "text-emerald-600" : "text-amber-600"}`}>
+                  {o.status === "shipped" ? "発送済み" : "発送準備中"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       {past.length > 0 && (
         <>

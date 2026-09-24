@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Avatar } from "@/components/club-card";
+import { ClubTabs } from "@/components/club-tabs";
 import { theme } from "@/lib/format";
 import { getClubBySlug } from "@/lib/queries";
 
@@ -30,6 +31,7 @@ export default async function ClubLayout({ params, children }: LayoutProps<"/c/[
             </span>
           </div>
         </div>
+        <ClubTabs slug={club.slug} />
         {children}
       </div>
     </div>

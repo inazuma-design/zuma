@@ -39,3 +39,43 @@ export function theme(key: string) {
 }
 
 export const CATEGORIES = ["音楽", "アイドル", "イラスト", "料理", "ゲーム", "スポーツ", "ビジネス", "その他"];
+
+/** Converts a YouTube / Vimeo URL into an embeddable player URL, or null if unsupported. */
+export function videoEmbedUrl(url: string): string | null {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\.|^m\./, "");
+    if (host === "youtube.com") {
+      const id = u.searchParams.get("v") ?? u.pathname.match(/^\/(?:live|shorts|embed)\/([\w-]+)/)?.[1];
+      return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+    }
+    if (host === "youtu.be") return `https://www.youtube-nocookie.com/embed/${u.pathname.slice(1)}`;
+    if (host === "vimeo.com") {
+      const id = u.pathname.match(/^\/(\d+)/)?.[1];
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {}
+  return null;
+}
+
+export function formatDateTime(value: string): string {
+  return parseDbDate(value).toLocaleString("ja-JP", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/** DB datetime → value for <input type="datetime-local"> in JST. */
+export function toJstInput(value: string): string {
+  const d = new Date(parseDbDate(value).getTime() + 9 * 3600 * 1000);
+  return d.toISOString().slice(0, 16);
+}
+
+export function gateLabel(minPrice: number): string {
+  return minPrice === 0 ? "全会員・一般公開" : `${yen(minPrice)}以上のプラン限定`;
+}

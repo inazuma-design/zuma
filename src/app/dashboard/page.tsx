@@ -26,10 +26,10 @@ export default async function Dashboard() {
   return (
     <div className="space-y-8">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="会員数" value={`${stats.activeCount}人`} />
+        <Stat label="会員数" value={`${stats.activeCount}人`} sub={stats.trialCount ? `うち無料体験 ${stats.trialCount}人` : undefined} />
         <Stat label="月間定期収入（MRR）" value={yen(stats.mrr)} />
         <Stat label="今月の売上" value={yen(stats.revenueThisMonth)} />
-        <Stat label="累計売上" value={yen(stats.revenueTotal)} />
+        <Stat label="累計売上" value={yen(stats.revenueTotal)} sub={`うちショップ ${yen(stats.shopTotal)}`} />
       </div>
 
       <section>
@@ -69,7 +69,11 @@ export default async function Dashboard() {
                     <td className="px-4 py-2">{m.plan_name}</td>
                     <td className="px-4 py-2">{formatDate(m.started_at)}</td>
                     <td className="px-4 py-2">
-                      {m.status === "active" ? (
+                      {m.status === "active" && m.is_trial ? (
+                        <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700">
+                          無料体験中（{formatDate(m.current_period_end)}まで）
+                        </span>
+                      ) : m.status === "active" ? (
                         <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700">継続中</span>
                       ) : valid ? (
                         <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700">
@@ -90,11 +94,12 @@ export default async function Dashboard() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="card p-5">
       <p className="text-xs font-bold text-zinc-500">{label}</p>
       <p className="mt-1 text-2xl font-black">{value}</p>
+      {sub && <p className="text-xs text-zinc-500">{sub}</p>}
     </div>
   );
 }

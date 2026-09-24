@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PlanList } from "@/components/plan-list";
 import { PostCard } from "@/components/post-card";
@@ -8,6 +9,7 @@ import {
   canView,
   getClubBySlug,
   getMembership,
+  getPoints,
   isMembershipValid,
   listPlans,
   listPosts,
@@ -51,13 +53,17 @@ export default async function ClubPage({ params, searchParams }: PageProps<"/c/[
           <div className="card p-4 text-sm">
             <p className="font-bold">加入中: {membership.plan_name}</p>
             <p className="mt-1 text-zinc-500">
-              {membership.status === "active"
-                ? `次回更新日: ${formatDate(membership.current_period_end)}`
-                : `退会済み（${formatDate(membership.current_period_end)}まで閲覧可）`}
+              {membership.status !== "active"
+                ? `退会済み（${formatDate(membership.current_period_end)}まで閲覧可）`
+                : membership.is_trial
+                  ? `無料体験中（${formatDate(membership.current_period_end)}まで）`
+                  : `次回更新日: ${formatDate(membership.current_period_end)}`}
             </p>
+            <p className="mt-2 font-bold">応援ポイント {getPoints(user!.id, club.id).toLocaleString()} pt</p>
+            <Link href={`/c/${club.slug}/card`} className="btn-outline mt-3 w-full">🪪 デジタル会員証</Link>
           </div>
         )}
-        <h2 className="text-lg font-black">プラン</h2>
+        <h2 id="plans" className="scroll-mt-20 text-lg font-black">プラン</h2>
         <PlanList
           plans={plans}
           slug={club.slug}
