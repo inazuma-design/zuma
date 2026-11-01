@@ -95,3 +95,13 @@ test("sitemap: トップと作品ページの絶対 URL を列挙する", () => 
   assert.match(xml, /<loc>https:\/\/inazuma-design\.github\.io\/fudemoji-sotsugyo\/<\/loc>/);
   assert.match(xml, /<loc>https:\/\/inazuma-design\.github\.io\/fudemoji-sotsugyo\/works\/slugbbbbbb\/<\/loc>/);
 });
+
+test("assetVersion を渡すと CSS / JS の URL に版番号が付き、キャッシュが更新される", () => {
+  const html = renderIndex({ config, works: [work()], urls, assetVersion: "abc123" });
+  assert.match(html, /href="\/fudemoji-sotsugyo\/assets\/styles\.css\?v=abc123"/);
+  assert.match(html, /src="\/fudemoji-sotsugyo\/assets\/lightbox\.js\?v=abc123"/);
+  const teaser = renderTeaser({ config, urls, assetVersion: "abc123" });
+  assert.match(teaser, /styles\.css\?v=abc123/);
+  const page = renderWork({ config, work: work(), prev: null, next: null, urls, index: 0, total: 1, assetVersion: "abc123" });
+  assert.match(page, /share\.js\?v=abc123/);
+});

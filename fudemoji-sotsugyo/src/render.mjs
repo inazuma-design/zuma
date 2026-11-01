@@ -21,7 +21,8 @@ function publishDateLabel(publishAt) {
   return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", month: "long", day: "numeric" }).format(d);
 }
 
-function head({ title, description, canonical, ogImage, ogType = "website", urls, extraCss = "" }) {
+function head({ title, description, canonical, ogImage, ogType = "website", urls, assetVersion = "", extraCss = "" }) {
+  const v = assetVersion ? `?v=${encodeURIComponent(assetVersion)}` : "";
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -48,7 +49,7 @@ ${ogImage ? `<meta property="og:image" content="${attr(ogImage)}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="${attr(urls.path("assets/styles.css"))}">
+<link rel="stylesheet" href="${attr(urls.path("assets/styles.css") + v)}">
 ${extraCss}
 </head>`;
 }
@@ -87,7 +88,8 @@ function workCard(w, urls) {
 </li>`;
 }
 
-export function renderIndex({ config, works, urls }) {
+export function renderIndex({ config, works, urls, assetVersion = "" }) {
+  const v = assetVersion ? `?v=${encodeURIComponent(assetVersion)}` : "";
   const description = config.hero?.description || `${config.title}。受講生の卒業作品をオンラインで展示しています。`;
   const count = works.length;
   const heroImage = works[0] ? urls.abs(`assets/works/${works[0].image.ogp}`) : null;
@@ -95,7 +97,7 @@ export function renderIndex({ config, works, urls }) {
     ? `<ul class="work-grid" id="work-grid">${works.map((w) => workCard(w, urls)).join("\n")}</ul>`
     : `<p class="empty">展示準備中です。作品の掲載まで、もう少しお待ちください。</p>`;
 
-  return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: heroImage, urls })}
+  return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: heroImage, urls, assetVersion })}
 <body class="page-index">
 <a class="skip" href="#works">作品一覧へ</a>
 <header class="hero">
@@ -138,18 +140,19 @@ ${footer(config, urls)}
   <button type="button" class="lb-nav lb-prev" data-lb-prev aria-label="前の作品">‹</button>
   <button type="button" class="lb-nav lb-next" data-lb-next aria-label="次の作品">›</button>
 </dialog>
-<script src="${attr(urls.path("assets/lightbox.js"))}" defer></script>
+<script src="${attr(urls.path("assets/lightbox.js") + v)}" defer></script>
 </body>
 </html>
 `;
 }
 
-export function renderWork({ config, work, prev, next, urls, index, total }) {
+export function renderWork({ config, work, prev, next, urls, index, total, assetVersion = "" }) {
+  const v = assetVersion ? `?v=${encodeURIComponent(assetVersion)}` : "";
   const title = `${work.title} ｜ ${work.nickname} ｜ ${config.title}`;
   const description = work.comment ? work.comment.replace(/\s+/g, " ").slice(0, 120) : `${work.nickname}さんの卒業作品「${work.title}」。${config.title}より。`;
   const canonical = urls.workAbs(work.slug);
   const img = work.image;
-  return `${head({ title, description, canonical, ogImage: urls.abs(`assets/works/${img.ogp}`), ogType: "article", urls })}
+  return `${head({ title, description, canonical, ogImage: urls.abs(`assets/works/${img.ogp}`), ogType: "article", urls, assetVersion })}
 <body class="page-work">
 <header class="work-head">
   <a class="back" href="${attr(urls.path("#works"))}">← 展覧会にもどる</a>
@@ -176,16 +179,16 @@ export function renderWork({ config, work, prev, next, urls, index, total }) {
   </nav>
 </main>
 ${footer(config, urls)}
-<script src="${attr(urls.path("assets/share.js"))}" defer></script>
+<script src="${attr(urls.path("assets/share.js") + v)}" defer></script>
 </body>
 </html>
 `;
 }
 
-export function renderTeaser({ config, urls }) {
+export function renderTeaser({ config, urls, assetVersion = "" }) {
   const dateLabel = publishDateLabel(config.publishAt);
   const description = `${config.title}は ${dateLabel} に公開予定です。`;
-  return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: null, urls })}
+  return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: null, urls, assetVersion })}
 <body class="page-teaser">
 <main class="teaser">
   <p class="hero-kicker">${escapeHtml(config.term)}</p>
@@ -209,8 +212,8 @@ ${items.map((u) => `  <url><loc>${escapeHtml(u)}</loc></url>`).join("\n")}
 `;
 }
 
-export function render404({ config, urls }) {
-  return `${head({ title: `ページが見つかりません ｜ ${config.title}`, description: config.title, canonical: urls.abs(""), ogImage: null, urls })}
+export function render404({ config, urls, assetVersion = "" }) {
+  return `${head({ title: `ページが見つかりません ｜ ${config.title}`, description: config.title, canonical: urls.abs(""), ogImage: null, urls, assetVersion })}
 <body class="page-teaser">
 <main class="teaser">
   <h1 class="hero-title">ページが見つかりません</h1>

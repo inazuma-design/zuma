@@ -1,4 +1,5 @@
 import { readFile, writeFile, mkdir, rm, cp, mkdtemp } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
@@ -57,21 +58,27 @@ export async function buildSite({ config, source, now, outDir, templatesDir = jo
   // 出力先を作り直す。公開時は一時ディレクトリで組み立ててから差し替える
   const target = published ? staging : await mkdtemp(join(tmpdir(), "fudemoji-dist-"));
   await mkdir(join(target, "assets"), { recursive: true });
-  for (const f of ["styles.css", "lightbox.js", "share.js"]) await cp(join(templatesDir, f), join(target, "assets", f));
+  const hash = createHash("sha256");
+  for (const f of ["styles.css", "lightbox.js", "share.js"]) {
+    hash.update(await readFile(join(templatesDir, f)));
+    await cp(join(templatesDir, f), join(target, "assets", f));
+  }
+  // CSS/JS の中身から版番号を作り URL に付ける。更新のたびにブラウザのキャッシュが切り替わる
+  const assetVersion = hash.digest("hex").slice(0, 8);
   await cp(join(templatesDir, "favicon.svg"), join(target, "favicon.svg"));
   await writeFile(join(target, ".nojekyll"), "");
-  await writeFile(join(target, "404.html"), render404({ config, urls }));
+  await writeFile(join(target, "404.html"), render404({ config, urls, assetVersion }));
 
   if (!published) {
-    await writeFile(join(target, "index.html"), renderTeaser({ config, urls }));
+    await writeFile(join(target, "index.html"), renderTeaser({ config, urls, assetVersion }));
     await writeFile(join(target, "robots.txt"), `User-agent: *\nDisallow: /\n`);
   } else {
-    await writeFile(join(target, "index.html"), renderIndex({ config, works, urls }));
+    await writeFile(join(target, "index.html"), renderIndex({ config, works, urls, assetVersion }));
     for (let i = 0; i < works.length; i++) {
       const w = works[i];
       const dir = join(target, "works", w.slug);
       await mkdir(dir, { recursive: true });
-      await writeFile(join(dir, "index.html"), renderWork({ config, work: w, prev: works[i - 1] ?? null, next: works[i + 1] ?? null, urls, index: i, total: works.length }));
+      await writeFile(join(dir, "index.html"), renderWork({ config, work: w, prev: works[i - 1] ?? null, next: works[i + 1] ?? null, urls, index: i, total: works.length, assetVersion }));
     }
     await writeFile(join(target, "sitemap.xml"), renderSitemap({ works, urls }));
     await writeFile(join(target, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${urls.abs("sitemap.xml")}\n`);
