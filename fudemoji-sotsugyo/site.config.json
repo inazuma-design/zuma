@@ -2,7 +2,10 @@
   "term": "デジタル筆文字 2期",
   "title": "デジタル筆文字作家養成講座 2期 卒業制作展",
   "publishAt": "2026-12-01T00:00:00+09:00",
-  "sheet": { "id": "TODO", "gid": "TODO" },
+  "sheet": {
+    "id": "1XcH-tcuxQILc5KFo8c6iDm20vMgLzsmWAqsP3huecF4",
+    "gid": "748232618"
+  },
   "hero": {
     "headline": "筆文字は、もっと自由になれる。",
     "subheadline": "一人ひとりの「好き」が、作品になる。",
@@ -20,11 +23,15 @@
   "baseUrl": "https://inazuma-design.github.io/fudemoji-sotsugyo/",
   "customDomain": "",
   "_todo": [
-    "sheet.id / sheet.gid: Googleフォームを作成後、回答スプレッドシートのURLから設定する",
     "hero.*: 仮コピー。先生の確認後に確定する",
     "greeting: 先生のごあいさつ原稿（受領するまで空のままにし、セクションは非表示）",
     "courseIntro: 講座紹介の文面（受領するまで空のまま。リンクだけは表示される）",
     "links.line: 先生のメルマガに記載の「デジタル筆文字公式LINE」。先生に最新のURLを確認する",
     "customDomain: 先生のドメイン利用が確定し DNS が設定できたら sotsugyo.fudemojinigaoesihira.com を入れる"
-  ]
+  ],
+  "_form": {
+    "edit": "https://docs.google.com/forms/d/1SKf_l4uyETOUf8DR0UnDyq1dfO48XEE0NlfZidBcGLY/edit",
+    "respond": "https://docs.google.com/forms/d/e/1FAIpQLSfHaBsVLhmilOkAw81Fzj8-1dEpnGCXHLjI7oaJmqT5pl1FKg/viewform",
+    "folder": "https://drive.google.com/drive/folders/139mA7utKwxHldd37ESj-92B2XzUpXuqd"
+  }
 }
