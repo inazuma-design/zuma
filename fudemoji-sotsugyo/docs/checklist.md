@@ -8,7 +8,8 @@
 - [ ] ごあいさつの原稿（数行）。受領するまでセクションは出ません（`greeting`）
 - [ ] 講座紹介の文面（`courseIntro`）。受領するまでリンクだけが出ます
 - [ ] 公式 LINE の URL が `https://lin.ee/LUsnOJX`（メルマガ記載の「デジタル筆文字公式LINE」）でよいか
-- [ ] 代表作品に使う画像と、その作者の許可（今はトップの OGP 画像に先頭の作品を使っています）
+- [ ] 代表作品に使う画像と、その作者の許可（許可が出たら `representativeWorkId` に設定。それまでトップの OGP に作品画像は出ません）
+- [ ] 「デジタル筆文字について」の紹介文（`digitalIntro`）と、ギャラリー見出し下の一文（`galleryLead`）の仮文面の可否
 - [ ] 受講生への告知: ニックネーム・作品名・ひとこと・Instagram・作品ごとの URL を公開し、SNS で共有されることへの同意
 - [ ] 独自ドメイン `sotsugyo.fudemojinigaoesihira.com` を使ってよいか。エックスサーバーの DNS を変更できる人は誰か
 - [ ] セクションの順（作品 → ごあいさつ）でよいか
@@ -39,6 +40,8 @@
 |---|---|---|
 | `site.config.json` → `sheet.id` / `sheet.gid` | `TODO` | フォーム作成後に設定（または GitHub Variables） |
 | `site.config.json` → `hero.*` | 仮コピー | 先生の確認待ち |
+| `site.config.json` → `digitalIntro` / `galleryLead` | 仮文面 | 先生の確認待ち |
+| `site.config.json` → `representativeWorkId` | 空 | 作者の同意後に設定 |
 | `site.config.json` → `greeting` / `courseIntro` | 空 | 原稿待ち。空の間は表示されない |
 | `site.config.json` → `customDomain` | 空 | ドメイン確定後 |
 | `.github/workflows/fudemoji-sotsugyo.yml` → `push.branches` | `main` | このリポジトリの既定ブランチ名に合わせる |
