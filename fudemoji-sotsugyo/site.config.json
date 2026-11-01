@@ -20,14 +20,15 @@
     "homepage": "https://fudemojinigaoesihira.com/",
     "instagram": "https://www.instagram.com/hirac_han/"
   },
-  "baseUrl": "https://inazuma-design.github.io/fudemoji-sotsugyo/",
+  "baseUrl": "https://inazuma-design.github.io/zuma/",
   "customDomain": "",
   "_todo": [
     "hero.*: 仮コピー。先生の確認後に確定する",
     "greeting: 先生のごあいさつ原稿（受領するまで空のままにし、セクションは非表示）",
     "courseIntro: 講座紹介の文面（受領するまで空のまま。リンクだけは表示される）",
     "links.line: 先生のメルマガに記載の「デジタル筆文字公式LINE」。先生に最新のURLを確認する",
-    "customDomain: 先生のドメイン利用が確定し DNS が設定できたら sotsugyo.fudemojinigaoesihira.com を入れる"
+    "customDomain: 先生のドメイン利用が確定し DNS が設定できたら sotsugyo.fudemojinigaoesihira.com を入れる",
+    "baseUrl: 専用リポジトリ inazuma-design/fudemoji-sotsugyo へ移したら https://inazuma-design.github.io/fudemoji-sotsugyo/ に戻す（GitHub Pages の URL はリポジトリ名で決まる）"
   ],
   "_form": {
     "edit": "https://docs.google.com/forms/d/1SKf_l4uyETOUf8DR0UnDyq1dfO48XEE0NlfZidBcGLY/edit",

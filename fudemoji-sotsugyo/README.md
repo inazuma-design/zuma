@@ -99,4 +99,4 @@ fudemoji-sotsugyo/
 1. `fudemoji-sotsugyo/` の中身を新リポジトリ `inazuma-design/fudemoji-sotsugyo` のルートにコピーする
 2. `.github/workflows/fudemoji-sotsugyo.yml` を新リポジトリの `.github/workflows/` に置き、`working-directory: fudemoji-sotsugyo`、`cache-dependency-path`、`upload-pages-artifact` の `path`、`push.paths` から `fudemoji-sotsugyo/` を外す
 3. 新リポジトリで Secrets / Variables / Pages を設定し直す（[docs/deployment.md](docs/deployment.md)）
-4. `site.config.json` の `baseUrl` が `https://inazuma-design.github.io/fudemoji-sotsugyo/` であることを確認する
+4. `site.config.json` の `baseUrl` を `https://inazuma-design.github.io/fudemoji-sotsugyo/` に変える（GitHub Pages の URL はリポジトリ名で決まる。このリポジトリにある間は `https://inazuma-design.github.io/zuma/`）
