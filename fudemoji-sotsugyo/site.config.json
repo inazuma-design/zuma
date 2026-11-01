@@ -11,7 +11,9 @@
     "subheadline": "一人ひとりの「好き」が、作品になる。",
     "description": "色も、形も、表現も。\nデジタルだからこそ広がる、筆文字の新しい世界。\n個性あふれる卒業作品をお楽しみください。"
   },
+  "digitalIntro": "紙と墨では一度きりの線も、デジタルなら何度でも試せます。\n色を重ね、形を変え、思いきって遊ぶ。\nその自由さが、一人ひとりの「らしさ」を引き出しました。",
   "galleryHeading": "それぞれの一筆、それぞれの世界。",
+  "galleryLead": "2期の受講生が、半年の学びの先にたどり着いた一枚一枚です。ひとつずつ、ゆっくりご覧ください。",
   "courseHeading": "あなたも、デジタル筆文字の世界へ。",
   "greeting": "",
   "courseIntro": "",
@@ -28,11 +30,14 @@
     "courseIntro: 講座紹介の文面（受領するまで空のまま。リンクだけは表示される）",
     "links.line: 先生のメルマガに記載の「デジタル筆文字公式LINE」。先生に最新のURLを確認する",
     "customDomain: 先生のドメイン利用が確定し DNS が設定できたら sotsugyo.fudemojinigaoesihira.com を入れる",
-    "baseUrl: 専用リポジトリ inazuma-design/fudemoji-sotsugyo へ移したら https://inazuma-design.github.io/fudemoji-sotsugyo/ に戻す（GitHub Pages の URL はリポジトリ名で決まる）"
+    "baseUrl: 専用リポジトリ inazuma-design/fudemoji-sotsugyo へ移したら https://inazuma-design.github.io/fudemoji-sotsugyo/ に戻す（GitHub Pages の URL はリポジトリ名で決まる）",
+    "digitalIntro / galleryLead: 仮の文面。先生の確認後に確定する（技術や工程の断定はしない）",
+    "representativeWorkId: トップページの OGP 画像に使う代表作品。作者の同意を得てから、シートの作品ID（Drive のファイルID または 作品ID 列の値）を入れる。空ならトップに画像は出さない"
   ],
   "_form": {
     "edit": "https://docs.google.com/forms/d/1SKf_l4uyETOUf8DR0UnDyq1dfO48XEE0NlfZidBcGLY/edit",
     "respond": "https://docs.google.com/forms/d/e/1FAIpQLSfHaBsVLhmilOkAw81Fzj8-1dEpnGCXHLjI7oaJmqT5pl1FKg/viewform",
     "folder": "https://drive.google.com/drive/folders/139mA7utKwxHldd37ESj-92B2XzUpXuqd"
-  }
+  },
+  "representativeWorkId": ""
 }

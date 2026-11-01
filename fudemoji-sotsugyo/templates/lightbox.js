@@ -17,7 +17,8 @@
   var img = dialog.querySelector(".lb-img");
   var title = dialog.querySelector(".lb-title");
   var author = dialog.querySelector(".lb-author");
-  var link = dialog.querySelector(".lb-link");
+  var link = dialog.querySelector(".lb-link:not(.lb-full)");
+  var fullLink = dialog.querySelector(".lb-full");
   var prevBtn = dialog.querySelector("[data-lb-prev]");
   var nextBtn = dialog.querySelector("[data-lb-next]");
   var current = -1;
@@ -32,6 +33,7 @@
     title.textContent = it.title;
     author.textContent = it.author;
     link.href = it.href;
+    fullLink.href = it.full;
     prevBtn.hidden = i === 0;
     nextBtn.hidden = i === items.length - 1;
   }
@@ -52,6 +54,16 @@
     if (e.key === "ArrowLeft") { show(current - 1); e.preventDefault(); }
     if (e.key === "ArrowRight") { show(current + 1); e.preventDefault(); }
   });
+  // スマホ: 左右スワイプで前後の作品へ
+  var touchX = null;
+  dialog.addEventListener("touchstart", function (e) { touchX = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
+  dialog.addEventListener("touchend", function (e) {
+    if (touchX === null) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) < 50) return;
+    show(dx < 0 ? current + 1 : current - 1);
+  }, { passive: true });
   dialog.addEventListener("close", function () {
     img.removeAttribute("src");
     if (opener && typeof opener.focus === "function") opener.focus();

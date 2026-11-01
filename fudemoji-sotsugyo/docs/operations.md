@@ -39,6 +39,7 @@
 | 非掲載にする | 「掲載」列に `×` を入れる（空欄＝掲載） |
 | 掲載を戻す | `×` を消す |
 | すぐ反映したい | GitHub の Actions → `fudemoji-sotsugyo` → Run workflow |
+| トップページの OGP 画像に代表作品を出す | 作者の同意を得てから、`site.config.json` の `representativeWorkId` に、その作品の Drive ファイル ID（画像列の `id=` の後ろ）または「作品ID」列の値を入れて push |
 
 ### シートの列
 

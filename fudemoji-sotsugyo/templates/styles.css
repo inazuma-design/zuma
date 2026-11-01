@@ -10,7 +10,8 @@
   --mat: #FFFFFF;        /* 額装のマット台紙 */
   --sumi: #2B2620;       /* 主な文字 */
   --sumi-soft: #6B6053;  /* 補助の文字 */
-  --kaki: #A85A16;       /* アクセント：柿色（リンク・数字） */
+  --kaki: #A85A16;       /* アクセント：柿色（数字・枠） */
+  --kaki-text: #8A4712;  /* 小さな文字のリンク用の濃い柿色（コントラスト 6.6:1） */
   --shu: #B5453A;        /* 控えめな強調（ほぼ使わない） */
   --line: #E6DACA;       /* 境界 */
   --font-display: "Yuji Syuku", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
@@ -42,7 +43,7 @@ body {
   h1, h2, h3, .hero-headline { word-break: auto-phrase; text-wrap: balance; }
 }
 img { max-width: 100%; height: auto; display: block; }
-a { color: var(--kaki); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+a { color: var(--kaki-text); text-underline-offset: .18em; text-decoration-thickness: 1px; }
 a:hover { color: var(--sumi); }
 a:focus-visible, button:focus-visible { outline: none; box-shadow: var(--focus); border-radius: 4px; }
 button { font: inherit; color: inherit; }
@@ -121,11 +122,12 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.work-actions { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; font-size: 14px; }
+.work-actions { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 0 14px; align-items: center; font-size: 14px; }
+.work-actions > * { min-height: 44px; display: inline-flex; align-items: center; }
 .work-link { font-weight: 500; }
 .work-zoom {
   background: none; border: 0; padding: 0; cursor: pointer;
-  color: var(--kaki); text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px;
+  color: var(--kaki-text); text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px;
 }
 .work-zoom:hover { color: var(--sumi); }
 .insta { display: inline-flex; align-items: center; gap: 5px; text-decoration: none; color: var(--sumi-soft); }
@@ -152,6 +154,12 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   }
   .section-title { font-size: 28px; }
 }
+
+/* ---------- デジタル筆文字について（紹介文） ---------- */
+.about { padding-top: 8px; padding-bottom: 8px; }
+.about-body { margin: 0; max-width: 32em; font-size: 18px; line-height: 2; }
+.gallery-lead { margin: 10px 0 0; max-width: 36em; color: var(--sumi); }
+@media (min-width: 600px) { .about-body { font-size: 19px; } }
 
 /* ---------- ごあいさつ・講座 ---------- */
 .greeting-body { margin: 20px 0 0; max-width: 36em; }
@@ -183,7 +191,10 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   margin: 0; background: var(--mat); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 2px;
   padding: 16px; display: flex; justify-content: center;
 }
+.work-stage { flex-wrap: wrap; }
 .work-stage img { width: auto; max-width: 100%; max-height: 82vh; height: auto; object-fit: contain; }
+.work-stage-tools { flex-basis: 100%; text-align: right; margin-top: 8px; font-size: 13px; }
+.work-stage-tools a { display: inline-flex; align-items: center; min-height: 36px; }
 .work-info { padding: 28px 4px 0; max-width: 36em; }
 .work-page-title { font-size: 30px; line-height: 1.4; }
 .work-page-author { margin: 8px 0 0; color: var(--sumi-soft); }
@@ -228,7 +239,7 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
 .lb-caption { color: var(--washi); font-size: 14px; display: flex; flex-wrap: wrap; gap: 4px 14px; justify-content: center; align-items: baseline; }
 .lb-title { font-family: var(--font-display); font-size: 18px; }
 .lb-author { opacity: .8; }
-.lb-link { color: #F2CB9C; }
+.lb-link { color: #F2CB9C; min-height: 44px; display: inline-flex; align-items: center; }
 .lb-close, .lb-nav {
   position: fixed; background: rgba(253, 248, 242, .12); color: var(--washi); border: 0; border-radius: 999px;
   width: 44px; height: 44px; font-size: 26px; line-height: 1; cursor: pointer; display: grid; place-items: center;

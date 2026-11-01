@@ -73,7 +73,7 @@ function workCard(w, urls) {
   const img = w.image;
   return `<li class="work-card">
   <a class="work-frame" href="${attr(href)}" aria-label="${attr(w.title)}（${attr(w.nickname)}）の作品ページ">
-    <img src="${attr(urls.path(`assets/works/${img.thumb}`))}" width="${img.thumbWidth}" height="${img.thumbHeight}" alt="${attr(w.nickname)}さんの作品「${attr(w.title)}」" loading="lazy" decoding="async" data-full="${attr(urls.path(`assets/works/${img.full}`))}" data-full-width="${img.width}" data-full-height="${img.height}">
+    <img src="${attr(urls.path(`assets/works/${img.thumb}`))}" srcset="${attr(urls.path(`assets/works/${img.thumb}`))} 640w, ${attr(urls.path(`assets/works/${img.full}`))} 1600w" sizes="(min-width: 1000px) 340px, (min-width: 600px) 46vw, 92vw" width="${img.thumbWidth}" height="${img.thumbHeight}" alt="${attr(w.nickname)}さんの作品「${attr(w.title)}」" loading="lazy" decoding="async" data-full="${attr(urls.path(`assets/works/${img.full}`))}" data-full-width="${img.width}" data-full-height="${img.height}">
   </a>
   <div class="work-caption">
     <h3 class="work-title"><a href="${attr(href)}">${escapeHtml(w.title)}</a></h3>
@@ -92,7 +92,9 @@ export function renderIndex({ config, works, urls, assetVersion = "" }) {
   const v = assetVersion ? `?v=${encodeURIComponent(assetVersion)}` : "";
   const description = config.hero?.description || `${config.title}。受講生の卒業作品をオンラインで展示しています。`;
   const count = works.length;
-  const heroImage = works[0] ? urls.abs(`assets/works/${works[0].image.ogp}`) : null;
+  // トップの OGP 画像は、掲載同意が取れた代表作品（config.representativeWorkId）だけに使う
+  const representative = config.representativeWorkId ? works.find((w) => w.id === config.representativeWorkId) : null;
+  const heroImage = representative ? urls.abs(`assets/works/${representative.image.ogp}`) : null;
   const gallery = count
     ? `<ul class="work-grid" id="work-grid">${works.map((w) => workCard(w, urls)).join("\n")}</ul>`
     : `<p class="empty">展示準備中です。作品の掲載まで、もう少しお待ちください。</p>`;
@@ -111,8 +113,12 @@ export function renderIndex({ config, works, urls, assetVersion = "" }) {
   <p class="hero-headline">${escapeHtml(config.hero?.headline || "")}</p>
 </header>
 <main>
+${config.digitalIntro ? `<section class="about" id="about" aria-label="デジタル筆文字について">
+  <p class="about-body">${nl2br(config.digitalIntro)}</p>
+</section>` : ""}
 <section class="works" id="works" aria-labelledby="works-heading">
   <h2 id="works-heading" class="section-title">${escapeHtml(config.galleryHeading || "それぞれの一筆、それぞれの世界。")}</h2>
+  ${config.galleryLead ? `<p class="gallery-lead">${nl2br(config.galleryLead)}</p>` : ""}
   <p class="count-line">全 <span class="count">${count}</span> 作品</p>
   ${gallery}
 </section>
@@ -135,7 +141,7 @@ ${footer(config, urls)}
   <button type="button" class="lb-close" data-lb-close aria-label="閉じる">×</button>
   <figure class="lb-figure">
     <img class="lb-img" alt="">
-    <figcaption class="lb-caption"><span class="lb-title"></span><span class="lb-author"></span><a class="lb-link" href="#">作品ページを見る</a></figcaption>
+    <figcaption class="lb-caption"><span class="lb-title"></span><span class="lb-author"></span><a class="lb-link" href="#">作品ページを見る</a><a class="lb-link lb-full" href="#" target="_blank" rel="noopener">原寸で開く</a></figcaption>
   </figure>
   <button type="button" class="lb-nav lb-prev" data-lb-prev aria-label="前の作品">‹</button>
   <button type="button" class="lb-nav lb-next" data-lb-next aria-label="次の作品">›</button>
@@ -161,6 +167,7 @@ export function renderWork({ config, work, prev, next, urls, index, total, asset
 <main class="work-main">
   <figure class="work-stage">
     <img src="${attr(urls.path(`assets/works/${img.full}`))}" width="${img.width}" height="${img.height}" alt="${attr(work.nickname)}さんの作品「${attr(work.title)}」" fetchpriority="high" decoding="async">
+    <figcaption class="work-stage-tools"><a class="open-full" href="${attr(urls.path(`assets/works/${img.full}`))}" target="_blank" rel="noopener">原寸で開く（指で拡大できます）</a></figcaption>
   </figure>
   <section class="work-info">
     <h1 class="work-page-title">${escapeHtml(work.title)}</h1>

@@ -105,3 +105,34 @@ test("assetVersion を渡すと CSS / JS の URL に版番号が付き、キャ�
   const page = renderWork({ config, work: work(), prev: null, next: null, urls, index: 0, total: 1, assetVersion: "abc123" });
   assert.match(page, /share\.js\?v=abc123/);
 });
+
+test("トップページ: デジタル筆文字の紹介文と卒業生への一文を設定から出し、未設定なら出さない", () => {
+  const without = renderIndex({ config, works: [work()], urls });
+  assert.ok(!without.includes('id="about"'));
+  const html = renderIndex({ config: { ...config, digitalIntro: "紙では<できない>重なりも、\nここでは表現のひとつ。", galleryLead: "一人ひとりの一筆に、敬意をこめて。" }, works: [work()], urls });
+  assert.match(html, /id="about"/);
+  assert.match(html, /紙では&lt;できない&gt;重なりも、<br>/);
+  assert.match(html, /一人ひとりの一筆に、敬意をこめて。/);
+  assert.ok(html.indexOf('id="about"') < html.indexOf('id="works"'), "紹介文はギャラリーの前");
+});
+
+test("トップページ: OGP 画像は同意済みの代表作品を指定したときだけ出す", () => {
+  const without = renderIndex({ config, works: [work()], urls });
+  assert.ok(!without.includes("og:image"), "指定が無ければ作品画像を OGP に使わない");
+  const b = work({ id: "b", slug: "slugbbbbbb", image: { ...work().image, ogp: "slugbbbbbb-ogp.jpg" } });
+  const html = renderIndex({ config: { ...config, representativeWorkId: "b" }, works: [work(), b], urls });
+  assert.match(html, /<meta property="og:image" content="https:\/\/inazuma-design\.github\.io\/fudemoji-sotsugyo\/assets\/works\/slugbbbbbb-ogp\.jpg">/);
+  const missing = renderIndex({ config: { ...config, representativeWorkId: "nope" }, works: [work()], urls });
+  assert.ok(!missing.includes("og:image"), "見つからなければ出さない");
+});
+
+test("一覧の画像は srcset で高解像度版も渡し、原寸で開くリンクを持つ", () => {
+  const html = renderIndex({ config, works: [work()], urls });
+  assert.match(html, /srcset="\/fudemoji-sotsugyo\/assets\/works\/slugaaaaaa-640\.webp 640w, \/fudemoji-sotsugya?a?-?[^"]*1600\.webp 1600w"/);
+  assert.match(html, /sizes="/);
+});
+
+test("作品ページ: 原寸画像を直接開くリンクがある", () => {
+  const html = renderWork({ config, work: work(), prev: null, next: null, urls, index: 0, total: 1 });
+  assert.match(html, /<a class="open-full" href="\/fudemoji-sotsugyo\/assets\/works\/slugaaaaaa-1600\.webp" target="_blank" rel="noopener">/);
+});
