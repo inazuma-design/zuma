@@ -1,0 +1,30 @@
+{
+  "term": "デジタル筆文字 2期",
+  "title": "デジタル筆文字作家養成講座 2期 卒業制作展",
+  "publishAt": "2026-12-01T00:00:00+09:00",
+  "sheet": { "id": "TODO", "gid": "TODO" },
+  "hero": {
+    "headline": "筆文字は、もっと自由になれる。",
+    "subheadline": "一人ひとりの「好き」が、作品になる。",
+    "description": "色も、形も、表現も。\nデジタルだからこそ広がる、筆文字の新しい世界。\n個性あふれる卒業作品をお楽しみください。"
+  },
+  "galleryHeading": "それぞれの一筆、それぞれの世界。",
+  "courseHeading": "あなたも、デジタル筆文字の世界へ。",
+  "greeting": "",
+  "courseIntro": "",
+  "links": {
+    "line": "https://lin.ee/LUsnOJX",
+    "homepage": "https://fudemojinigaoesihira.com/",
+    "instagram": "https://www.instagram.com/hirac_han/"
+  },
+  "baseUrl": "https://inazuma-design.github.io/fudemoji-sotsugyo/",
+  "customDomain": "",
+  "_todo": [
+    "sheet.id / sheet.gid: Googleフォームを作成後、回答スプレッドシートのURLから設定する",
+    "hero.*: 仮コピー。先生の確認後に確定する",
+    "greeting: 先生のごあいさつ原稿（受領するまで空のままにし、セクションは非表示）",
+    "courseIntro: 講座紹介の文面（受領するまで空のまま。リンクだけは表示される）",
+    "links.line: 先生のメルマガに記載の「デジタル筆文字公式LINE」。先生に最新のURLを確認する",
+    "customDomain: 先生のドメイン利用が確定し DNS が設定できたら sotsugyo.fudemojinigaoesihira.com を入れる"
+  ]
+}

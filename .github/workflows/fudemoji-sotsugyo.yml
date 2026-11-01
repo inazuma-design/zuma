@@ -1,0 +1,72 @@
+# デジタル筆文字作家養成講座 2期 卒業制作展 — ビルドと GitHub Pages への公開
+#
+# ・1日2回（JST 00:05 / 12:00）、手動実行、fudemoji-sotsugyo/ の変更 push で動く
+# ・Google のデータは Secrets のサービスアカウント鍵で読み取り専用で取得する
+# ・公開日（site.config.json の publishAt）より前は予告ページだけを出力する
+# ・テストかビルドが失敗したらデプロイしない（前回の公開物が残る）
+#
+# 専用リポジトリに移したら working-directory と paths の「fudemoji-sotsugyo/」を外す。
+name: fudemoji-sotsugyo
+
+on:
+  schedule:
+    - cron: "5 15 * * *"   # JST 00:05
+    - cron: "0 3 * * *"    # JST 12:00
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "取得元（service-account / public-csv / fixtures）"
+        default: "service-account"
+        required: false
+  push:
+    branches: [main]
+    paths:
+      - "fudemoji-sotsugyo/**"
+      - ".github/workflows/fudemoji-sotsugyo.yml"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fudemoji-sotsugyo-pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: fudemoji-sotsugyo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: fudemoji-sotsugyo/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - name: Build site
+        env:
+          FUDEMOJI_SOURCE: ${{ github.event.inputs.source || 'service-account' }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          FUDEMOJI_SHEET_ID: ${{ vars.FUDEMOJI_SHEET_ID }}
+          FUDEMOJI_SHEET_GID: ${{ vars.FUDEMOJI_SHEET_GID }}
+        run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: fudemoji-sotsugyo/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

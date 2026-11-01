@@ -1,0 +1,18 @@
+{
+  "name": "fudemoji-sotsugyo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "デジタル筆文字作家養成講座 2期 卒業制作展 — 静的サイト生成",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node src/build.mjs",
+    "build:fixtures": "node src/build.mjs --source fixtures",
+    "build:fixtures:published": "node src/build.mjs --source fixtures --now 2026-12-01T00:05:00+09:00",
+    "serve": "node src/serve.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "sharp": "^0.34.0"
+  }
+}
