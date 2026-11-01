@@ -63,7 +63,7 @@ GitHub Actions が Google のデータを読み取り専用で取得するため
 
 `site.config.json` の `sheet.id` / `sheet.gid` に直接書いてもよいですが、Variables のほうが専用リポジトリへ移すときに楽です。
 
-設定後、Actions → `fudemoji-sotsugyo` → **Run workflow** で手動実行し、緑になることと、`https://inazuma-design.github.io/fudemoji-sotsugyo/` に予告ページが出ることを確認します。
+設定後、Actions → `fudemoji-sotsugyo` → **Run workflow** で手動実行し、緑になることと、公開 URL に予告ページが出ることを確認します。URL はリポジトリ名で決まります: このリポジトリ（zuma）にある間は `https://inazuma-design.github.io/zuma/`、専用リポジトリに移したら `https://inazuma-design.github.io/fudemoji-sotsugyo/`。`site.config.json` の `baseUrl` を必ず一致させてください。
 
 ## 4. 公開前の確認（プレビュー）
 
