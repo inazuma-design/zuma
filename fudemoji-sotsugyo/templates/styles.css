@@ -77,9 +77,37 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
   margin: 28px 0 0;
 }
 .hero-text { display: contents; }
+/* スマホ〜タブレット: 作品ありのときは タイトル → 作品 → コピー → 説明 の順に並べ替える */
+.hero.has-art { display: flex; flex-direction: column; }
+.hero.has-art .hero-kicker { order: 1; }
+.hero.has-art .hero-title { order: 2; }
+.hero.has-art .hero-art { order: 3; margin-top: 24px; }
+.hero.has-art .hero-headline { order: 4; }
+.hero.has-art .hero-sub { order: 5; }
+.hero.has-art .hero-desc { order: 6; }
+.hero.has-art .hero-date { order: 7; }
 .hero-sub { margin: 14px 0 0; font-size: 17px; color: var(--sumi-soft); }
 .hero-desc { margin: 20px 0 0; max-width: 34em; }
 .hero-date { margin: 28px 0 0; font-size: 14px; color: var(--sumi-soft); letter-spacing: .08em; }
+
+/* ---------- ファーストビューの作品（先生の作品） ---------- */
+.hero-art { margin: 28px 0 0; }
+.hero-art-frame {
+  display: block; background: var(--mat); padding: 14px; border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 2px;
+}
+.hero-art-frame img { width: 100%; height: auto; }
+.hero-art-caption { margin: 10px 4px 0; font-size: 13px; color: var(--sumi-soft); letter-spacing: .04em; }
+.teaser .hero-art { margin-top: 32px; }
+@media (min-width: 1000px) {
+  /* 作品あり: 左に作品を大きく、右に文章と縦書きのコピー */
+  .hero.has-art { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr) auto; column-gap: 48px; align-items: start; }
+  .hero.has-art .hero-text { display: block; }
+  .hero.has-art .hero-kicker, .hero.has-art .hero-title, .hero.has-art .hero-sub, .hero.has-art .hero-desc, .hero.has-art .hero-date { order: 0; }
+  .hero.has-art .hero-art { grid-column: 1; grid-row: 1; margin: 0; }
+  .hero.has-art .hero-text { grid-column: 2; grid-row: 1; align-self: center; }
+  .hero.has-art .hero-headline { grid-column: 3; grid-row: 1; }
+  .hero.has-art .hero-title { font-size: 32px; }
+}
 
 /* ---------- セクション共通 ---------- */
 main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 auto; }

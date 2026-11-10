@@ -58,6 +58,19 @@ export async function buildSite({ config, source, now, outDir, templatesDir = jo
   // 出力先を作り直す。公開時は一時ディレクトリで組み立ててから差し替える
   const target = published ? staging : await mkdtemp(join(tmpdir(), "fudemoji-dist-"));
   await mkdir(join(target, "assets"), { recursive: true });
+
+  // 先生の作品（ファーストビュー）。受講生の一覧とは別に、設定 hero.image.file で指定する
+  let heroArt = null;
+  const heroCfg = config.hero?.image;
+  if (heroCfg?.file) {
+    try {
+      const buf = await source.loadImage(heroCfg.file);
+      const img = await processWorkImage(buf, { outDir: join(target, "assets"), slug: "hero" });
+      heroArt = { ...img, caption: heroCfg.caption || "", alt: heroCfg.alt || heroCfg.caption || "" };
+    } catch (e) {
+      log.warn(`⚠ ファーストビューの作品「${heroCfg.file}」を読み込めませんでした: ${e.message}（画像なしで続行）`);
+    }
+  }
   const hash = createHash("sha256");
   for (const f of ["styles.css", "lightbox.js", "share.js"]) {
     hash.update(await readFile(join(templatesDir, f)));
@@ -70,10 +83,10 @@ export async function buildSite({ config, source, now, outDir, templatesDir = jo
   await writeFile(join(target, "404.html"), render404({ config, urls, assetVersion }));
 
   if (!published) {
-    await writeFile(join(target, "index.html"), renderTeaser({ config, urls, assetVersion }));
+    await writeFile(join(target, "index.html"), renderTeaser({ config, urls, assetVersion, heroArt }));
     await writeFile(join(target, "robots.txt"), `User-agent: *\nDisallow: /\n`);
   } else {
-    await writeFile(join(target, "index.html"), renderIndex({ config, works, urls, assetVersion }));
+    await writeFile(join(target, "index.html"), renderIndex({ config, works, urls, assetVersion, heroArt }));
     for (let i = 0; i < works.length; i++) {
       const w = works[i];
       const dir = join(target, "works", w.slug);

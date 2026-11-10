@@ -117,3 +117,18 @@ test("createSource は GOOGLE_SERVICE_ACCOUNT_FILE で鍵ファイルのパス�
   assert.equal(src.name, "service-account");
   await assert.rejects(createSource({ source: "service-account", config, env: { GOOGLE_SERVICE_ACCOUNT_FILE: join(dir, "missing.json") }, fixturesDir: "/x" }), /missing\.json/);
 });
+
+test("hero.image.file を設定すると、先生の作品を assets/hero-*.webp に出力してトップと予告ページに使う（一覧には入れない）", async () => {
+  const outDir = await mkdtemp(join(tmpdir(), "dist-"));
+  const base = await loadConfig(new URL("../site.config.json", import.meta.url).pathname);
+  const config = { ...base, hero: { ...base.hero, image: { file: "sample-03.png", caption: "筆文字似顔絵師Hira「サンプル」", alt: "先生の作品" } } };
+  const fixturesDir = new URL("../fixtures/", import.meta.url).pathname;
+  const pre = await buildSite({ config, source: fixturesSource(fixturesDir), now: new Date("2026-11-20T00:00:00+09:00"), outDir, log: quiet });
+  assert.ok(await exists(join(outDir, "assets", "hero-1600.webp")));
+  assert.match(await readFile(join(outDir, "index.html"), "utf8"), /hero-art/);
+  assert.ok(!(await exists(join(outDir, "works"))), "公開前は作品ページを出さない");
+  const post = await buildSite({ config, source: fixturesSource(fixturesDir), now: new Date("2026-12-01T00:05:00+09:00"), outDir, log: quiet });
+  const index = await readFile(join(outDir, "index.html"), "utf8");
+  assert.match(index, /hero-art/);
+  assert.equal(post.works.length, 5, "先生の作品は一覧に数えない");
+});
