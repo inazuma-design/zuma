@@ -136,3 +136,18 @@ test("作品ページ: 原寸画像を直接開くリンクがある", () => {
   const html = renderWork({ config, work: work(), prev: null, next: null, urls, index: 0, total: 1 });
   assert.match(html, /<a class="open-full" href="\/fudemoji-sotsugyo\/assets\/works\/slugaaaaaa-1600\.webp" target="_blank" rel="noopener">/);
 });
+
+test("ヒーローに先生の作品（heroArt）があれば、額装画像とキャプションを出し、トップの OGP に使う", () => {
+  const heroArt = { thumb: "hero-640.webp", full: "hero-1600.webp", ogp: "hero-ogp.jpg", width: 1600, height: 1000, thumbWidth: 640, thumbHeight: 400, caption: "筆文字似顔絵師Hira「<春>」", alt: "ひら先生の作品" };
+  const html = renderIndex({ config, works: [work()], urls, heroArt });
+  assert.match(html, /<figure class="hero-art">/);
+  assert.match(html, /src="\/fudemoji-sotsugyo\/assets\/hero-1600\.webp"/);
+  assert.match(html, /筆文字似顔絵師Hira「&lt;春&gt;」/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/inazuma-design\.github\.io\/fudemoji-sotsugyo\/assets\/hero-ogp\.jpg">/);
+  assert.ok(html.indexOf('class="hero-art"') < html.indexOf('id="works"'), "FV はギャラリーより前");
+  const teaser = renderTeaser({ config, urls, heroArt });
+  assert.match(teaser, /hero-1600\.webp/);
+  assert.match(teaser, /og:image/);
+  const none = renderIndex({ config, works: [work()], urls });
+  assert.ok(!none.includes("hero-art"));
+});

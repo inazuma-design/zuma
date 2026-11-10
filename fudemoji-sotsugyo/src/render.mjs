@@ -59,6 +59,18 @@ function instagramLink(url, label) {
   return `<a class="insta" href="${attr(url)}" target="_blank" rel="noopener noreferrer" aria-label="${attr(label)}のInstagram"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg><span>Instagram</span></a>`;
 }
 
+
+/** ヒーローに置く先生の作品（受講生の一覧とは別）。無ければ空文字。 */
+function heroArtFigure(heroArt, urls, { eager = true } = {}) {
+  if (!heroArt) return "";
+  return `<figure class="hero-art">
+    <a class="hero-art-frame" href="${attr(urls.path(`assets/${heroArt.full}`))}" target="_blank" rel="noopener">
+      <img src="${attr(urls.path(`assets/${heroArt.full}`))}" srcset="${attr(urls.path(`assets/${heroArt.thumb}`))} 640w, ${attr(urls.path(`assets/${heroArt.full}`))} 1600w" sizes="(min-width: 1000px) 640px, 92vw" width="${heroArt.width}" height="${heroArt.height}" alt="${attr(heroArt.alt || heroArt.caption || "")}"${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async">
+    </a>
+    ${heroArt.caption ? `<figcaption class="hero-art-caption">${escapeHtml(heroArt.caption)}</figcaption>` : ""}
+  </figure>`;
+}
+
 function footer(config, urls) {
   const year = new Date(config.publishAt).getFullYear();
   return `<footer class="site-foot">
@@ -88,13 +100,13 @@ function workCard(w, urls) {
 </li>`;
 }
 
-export function renderIndex({ config, works, urls, assetVersion = "" }) {
+export function renderIndex({ config, works, urls, assetVersion = "", heroArt = null }) {
   const v = assetVersion ? `?v=${encodeURIComponent(assetVersion)}` : "";
   const description = config.hero?.description || `${config.title}。受講生の卒業作品をオンラインで展示しています。`;
   const count = works.length;
   // トップの OGP 画像は、掲載同意が取れた代表作品（config.representativeWorkId）だけに使う
   const representative = config.representativeWorkId ? works.find((w) => w.id === config.representativeWorkId) : null;
-  const heroImage = representative ? urls.abs(`assets/works/${representative.image.ogp}`) : null;
+  const heroImage = heroArt ? urls.abs(`assets/${heroArt.ogp}`) : representative ? urls.abs(`assets/works/${representative.image.ogp}`) : null;
   const gallery = count
     ? `<ul class="work-grid" id="work-grid">${works.map((w) => workCard(w, urls)).join("\n")}</ul>`
     : `<p class="empty">展示準備中です。作品の掲載まで、もう少しお待ちください。</p>`;
@@ -102,7 +114,7 @@ export function renderIndex({ config, works, urls, assetVersion = "" }) {
   return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: heroImage, urls, assetVersion })}
 <body class="page-index">
 <a class="skip" href="#works">作品一覧へ</a>
-<header class="hero">
+<header class="hero${heroArt ? " has-art" : ""}">
   <div class="hero-text">
     <p class="hero-kicker">${escapeHtml(config.term)}</p>
     <h1 class="hero-title">${escapeHtml(config.title)}</h1>
@@ -110,6 +122,7 @@ export function renderIndex({ config, works, urls, assetVersion = "" }) {
     ${config.hero?.description ? `<p class="hero-desc">${nl2br(config.hero.description)}</p>` : ""}
     <p class="hero-date">${publishDateLabel(config.publishAt)} 公開</p>
   </div>
+  ${heroArtFigure(heroArt, urls)}
   <p class="hero-headline">${escapeHtml(config.hero?.headline || "")}</p>
 </header>
 <main>
@@ -192,14 +205,15 @@ ${footer(config, urls)}
 `;
 }
 
-export function renderTeaser({ config, urls, assetVersion = "" }) {
+export function renderTeaser({ config, urls, assetVersion = "", heroArt = null }) {
   const dateLabel = publishDateLabel(config.publishAt);
   const description = `${config.title}は ${dateLabel} に公開予定です。`;
-  return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: null, urls, assetVersion })}
+  return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: heroArt ? urls.abs(`assets/${heroArt.ogp}`) : null, urls, assetVersion })}
 <body class="page-teaser">
-<main class="teaser">
+<main class="teaser${heroArt ? " has-art" : ""}">
   <p class="hero-kicker">${escapeHtml(config.term)}</p>
   <h1 class="hero-title">${escapeHtml(config.title)}</h1>
+  ${heroArtFigure(heroArt, urls)}
   <p class="teaser-date"><span class="teaser-date-num">${escapeHtml(dateLabel)}</span>公開予定</p>
   ${config.hero?.headline ? `<p class="hero-headline">${escapeHtml(config.hero.headline)}</p>` : ""}
   <p class="teaser-note">受講生の卒業作品を、ここに展示します。公開までもう少しお待ちください。</p>
