@@ -77,3 +77,31 @@ test("public-csv ソースは gviz の CSV を読み、Drive の公開ダウン�
   assert.equal((await src.loadImage("IMG")).toString(), "JPG");
   await assert.rejects(src.loadImage("HTML"), /公開されていない/);
 });
+
+test("service-account ソースはファイル名を渡されたら共有フォルダ内を名前で探してダウンロードする", async () => {
+  const calls = [];
+  const fetchImpl = async (url) => {
+    const u = String(url); calls.push(u);
+    if (u.startsWith("https://oauth2")) return new Response(JSON.stringify({ access_token: "tok" }));
+    if (u.startsWith("https://www.googleapis.com/drive/v3/files?")) {
+      assert.ok(u.includes(encodeURIComponent("name = 'はなこ_希望.jpg'")), u);
+      return new Response(JSON.stringify({ files: [{ id: "FOUND1", name: "はなこ_希望.jpg", mimeType: "image/jpeg", size: "100" }] }));
+    }
+    if (u.includes("/files/FOUND1?") && u.includes("fields=")) return new Response(JSON.stringify({ mimeType: "image/jpeg", size: "100" }));
+    if (u.includes("/files/FOUND1?alt=media")) return new Response(Buffer.from("JPG"));
+    throw new Error("unexpected " + u);
+  };
+  const src = serviceAccountSource({ serviceAccount: sa, sheetId: "S", gid: "0", fetchImpl });
+  assert.equal((await src.loadImage("はなこ_希望.jpg")).toString(), "JPG");
+});
+
+test("service-account ソースは名前で見つからない・複数見つかるとき理由つきで失敗する", async () => {
+  const mk = (files) => async (url) => {
+    const u = String(url);
+    if (u.startsWith("https://oauth2")) return new Response(JSON.stringify({ access_token: "tok" }));
+    if (u.startsWith("https://www.googleapis.com/drive/v3/files?")) return new Response(JSON.stringify({ files }));
+    throw new Error("unexpected " + u);
+  };
+  await assert.rejects(serviceAccountSource({ serviceAccount: sa, sheetId: "S", gid: "0", fetchImpl: mk([]) }).loadImage("ない.jpg"), /見つかりません/);
+  await assert.rejects(serviceAccountSource({ serviceAccount: sa, sheetId: "S", gid: "0", fetchImpl: mk([{ id: "a" }, { id: "b" }]) }).loadImage("重複.jpg"), /2 件/);
+});

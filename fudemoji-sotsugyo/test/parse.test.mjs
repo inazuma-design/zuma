@@ -112,3 +112,19 @@ test("slugFor は同じIDから常に同じ slug を返し、IDが違えば変�
   assert.notEqual(s1, slugFor("fileB"));
   assert.match(s1, /^[a-z0-9]{10}$/);
 });
+
+test("作品画像の欄にファイル名を書いても取り込める（ID は空、imageRef にファイル名）", () => {
+  const { works, warnings } = parse([row({ image: "はなこ_希望.jpg" })]);
+  assert.equal(warnings.length, 0);
+  assert.equal(works.length, 1);
+  assert.equal(works[0].driveFileId, null);
+  assert.equal(works[0].imageRef, "はなこ_希望.jpg");
+  assert.equal(works[0].id, "はなこ_希望.jpg");
+  assert.equal(works[0].slug, slugFor("はなこ_希望.jpg"));
+});
+
+test("作品画像の欄が Drive のリンクなら imageRef にもリンクが入り、ID が優先される", () => {
+  const { works } = parse([row({ image: DRIVE("fileZ") })]);
+  assert.equal(works[0].driveFileId, "fileZ");
+  assert.equal(works[0].id, "fileZ");
+});

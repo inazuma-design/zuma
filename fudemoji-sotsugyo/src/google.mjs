@@ -54,7 +54,17 @@ export function serviceAccountSource({ serviceAccount, sheetId, gid, fetchImpl =
       const data = await (await get(`https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}/values/${range}?majorDimension=ROWS`, "シートの値の取得")).json();
       return (data.values || []).map((r) => r.map((c) => String(c ?? "")));
     },
-    async loadImage(fileId) {
+    async loadImage(ref) {
+      // ファイル ID は英数字と - _ だけ。ドットや日本語を含むならファイル名として共有フォルダ内を探す
+      let fileId = ref;
+      if (/[^A-Za-z0-9_-]/.test(ref)) {
+        const q = encodeURIComponent(`name = '${ref.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}' and trashed = false`);
+        const found = await (await get(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,mimeType,size)&includeItemsFromAllDrives=true&supportsAllDrives=true&pageSize=10`, `画像「${ref}」の検索`)).json();
+        const files = found.files || [];
+        if (files.length === 0) throw new Error(`画像「${ref}」が共有フォルダに見つかりません（ファイル名を確認してください）`);
+        if (files.length > 1) throw new Error(`画像「${ref}」が ${files.length} 件あります（同名のファイルを片方消すか、名前を変えてください）`);
+        fileId = files[0].id;
+      }
       const id = encodeURIComponent(fileId);
       const info = await (await get(`https://www.googleapis.com/drive/v3/files/${id}?fields=mimeType,size,name&supportsAllDrives=true`, `画像 ${fileId} の情報取得`)).json();
       if (!IMAGE_MIME.has(info.mimeType)) throw new Error(`対応していないファイル形式です: ${info.mimeType}（JPEG/PNG のみ）`);

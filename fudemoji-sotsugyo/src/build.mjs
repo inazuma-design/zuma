@@ -44,7 +44,7 @@ export async function buildSite({ config, source, now, outDir, templatesDir = jo
   const skipped = [];
   for (const w of candidates) {
     try {
-      const buf = await source.loadImage(w.driveFileId);
+      const buf = await source.loadImage(w.driveFileId ?? w.imageRef);
       const image = await processWorkImage(buf, { outDir: imgOut, slug: w.slug });
       works.push({ ...w, image });
     } catch (e) {
