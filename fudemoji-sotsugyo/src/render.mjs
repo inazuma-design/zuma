@@ -16,6 +16,11 @@ export function nl2br(text) {
 
 const attr = escapeHtml;
 
+/** 展覧会名の「2期」のような 数字＋期 を途中で改行させない。 */
+function titleHtml(title) {
+  return escapeHtml(title).replace(/(\d+)\s*期/g, '<span class="nobr">$1期</span>');
+}
+
 function publishDateLabel(publishAt) {
   const d = new Date(publishAt);
   return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", month: "long", day: "numeric" }).format(d);
@@ -117,7 +122,7 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
 <header class="hero${heroArt ? " has-art" : ""}">
   <div class="hero-text">
     <p class="hero-kicker">${escapeHtml(config.term)}</p>
-    <h1 class="hero-title">${escapeHtml(config.title)}</h1>
+    <h1 class="hero-title">${titleHtml(config.title)}</h1>
     ${config.hero?.subheadline ? `<p class="hero-sub">${escapeHtml(config.hero.subheadline)}</p>` : ""}
     ${config.hero?.description ? `<p class="hero-desc">${nl2br(config.hero.description)}</p>` : ""}
     <p class="hero-date">${publishDateLabel(config.publishAt)} 公開</p>
@@ -212,7 +217,7 @@ export function renderTeaser({ config, urls, assetVersion = "", heroArt = null }
 <body class="page-teaser">
 <main class="teaser${heroArt ? " has-art" : ""}">
   <p class="hero-kicker">${escapeHtml(config.term)}</p>
-  <h1 class="hero-title">${escapeHtml(config.title)}</h1>
+  <h1 class="hero-title">${titleHtml(config.title)}</h1>
   ${heroArtFigure(heroArt, urls)}
   <p class="teaser-date"><span class="teaser-date-num">${escapeHtml(dateLabel)}</span>公開予定</p>
   ${config.hero?.headline ? `<p class="hero-headline">${escapeHtml(config.hero.headline)}</p>` : ""}

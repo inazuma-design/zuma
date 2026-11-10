@@ -151,3 +151,10 @@ test("ヒーローに先生の作品（heroArt）があれば、額装画像と�
   const none = renderIndex({ config, works: [work()], urls });
   assert.ok(!none.includes("hero-art"));
 });
+
+test("展覧会名の「2期」は途中で改行されないよう nobr で包む", () => {
+  const html = renderIndex({ config, works: [], urls });
+  assert.match(html, /<h1 class="hero-title">デジタル筆文字作家養成講座 <span class="nobr">2期<\/span> 卒業制作展<\/h1>/);
+  const teaser = renderTeaser({ config, urls });
+  assert.match(teaser, /<span class="nobr">2期<\/span>/);
+});
