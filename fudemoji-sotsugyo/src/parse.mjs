@@ -113,17 +113,19 @@ export function rowsToWorks(rows, { term } = {}) {
 
     const nickname = get(r, "nickname").trim();
     const title = get(r, "title").trim();
-    const driveFileId = driveFileIdFrom(get(r, "image"));
+    // 作品画像の欄は、フォームの Drive リンク／ファイル ID／共有フォルダ内のファイル名 のどれでもよい
+    const imageRef = get(r, "image").trim();
+    const driveFileId = driveFileIdFrom(imageRef);
     const missing = [];
     if (!nickname) missing.push("ニックネーム");
     if (!title) missing.push("作品名");
-    if (!driveFileId) missing.push("作品画像");
+    if (!imageRef) missing.push("作品画像");
     if (missing.length) {
       warnings.push(`行 ${rowNo}: ${missing.join("・")}が空のためスキップしました`);
       return;
     }
     const workIdRaw = get(r, "workId").trim();
-    const id = workIdRaw || driveFileId;
+    const id = workIdRaw || driveFileId || imageRef;
     if (seenIds.has(id)) {
       warnings.push(`行 ${rowNo}: 作品ID「${id}」が行 ${seenIds.get(id)} と重複しているためスキップしました`);
       return;
@@ -146,6 +148,7 @@ export function rowsToWorks(rows, { term } = {}) {
       id,
       slug: slugFor(id),
       driveFileId,
+      imageRef,
       submittedAt,
       inputIndex: i,
       order,

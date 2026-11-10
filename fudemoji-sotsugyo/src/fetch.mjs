@@ -15,13 +15,14 @@ export function fixturesSource(fixturesDir, { rows } = {}) {
       const header = Array.from(new Set(data.flatMap((r) => Object.keys(r))));
       return [header, ...data.map((r) => header.map((h) => String(r[h] ?? "")))];
     },
-    async loadImage(fileId) {
-      for (const ext of ["png", "jpg", "jpeg", "webp"]) {
+    async loadImage(ref) {
+      const candidates = /\.[a-z0-9]+$/i.test(ref) ? [ref] : ["png", "jpg", "jpeg", "webp"].map((ext) => `${ref}.${ext}`);
+      for (const name of candidates) {
         try {
-          return await readFile(join(fixturesDir, "sample-images", `${fileId}.${ext}`));
-        } catch { /* 次の拡張子 */ }
+          return await readFile(join(fixturesDir, "sample-images", name));
+        } catch { /* 次の候補 */ }
       }
-      throw new Error(`サンプル画像 ${fileId} が見つかりません`);
+      throw new Error(`サンプル画像 ${ref} が見つかりません`);
     },
   };
 }
