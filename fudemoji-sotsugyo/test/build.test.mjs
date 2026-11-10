@@ -106,3 +106,14 @@ test("シートの取得に失敗したらビルドは例外で止まり、出�
   await assert.rejects(buildSite({ config, source: broken, now: new Date(), outDir, log: quiet }), /401/);
   assert.equal(await readFile(join(outDir, "index.html"), "utf8"), "previous");
 });
+
+test("createSource は GOOGLE_SERVICE_ACCOUNT_FILE で鍵ファイルのパスも受け付ける", async () => {
+  const { createSource } = await import("../src/fetch.mjs");
+  const dir = await mkdtemp(join(tmpdir(), "sa-"));
+  const keyPath = join(dir, "key.json");
+  await writeFile(keyPath, JSON.stringify({ client_email: "x@y.iam.gserviceaccount.com", private_key: "-----BEGIN PRIVATE KEY-----\nMIIB\n-----END PRIVATE KEY-----\n" }));
+  const config = { sheet: { id: "S", gid: "1" } };
+  const src = await createSource({ source: "service-account", config, env: { GOOGLE_SERVICE_ACCOUNT_FILE: keyPath }, fixturesDir: "/nonexistent" });
+  assert.equal(src.name, "service-account");
+  await assert.rejects(createSource({ source: "service-account", config, env: { GOOGLE_SERVICE_ACCOUNT_FILE: join(dir, "missing.json") }, fixturesDir: "/x" }), /missing\.json/);
+});

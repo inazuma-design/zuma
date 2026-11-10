@@ -10,6 +10,8 @@
     "build:fixtures": "node src/build.mjs --source fixtures",
     "build:fixtures:published": "node src/build.mjs --source fixtures --now 2026-12-01T00:05:00+09:00",
     "serve": "node src/serve.mjs",
+    "zip": "node scripts/make-zip.mjs",
+    "release": "node src/build.mjs && node scripts/make-zip.mjs",
     "test": "node --test"
   },
   "dependencies": {
