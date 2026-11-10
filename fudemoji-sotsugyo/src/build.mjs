@@ -113,7 +113,7 @@ async function main() {
   const sourceName = String(args.source || process.env.FUDEMOJI_SOURCE || "service-account");
   const now = parseNow(args.now ?? process.env.FUDEMOJI_NOW);
   const outDir = args.out ? String(args.out) : join(ROOT, "dist");
-  const source = createSource({ source: sourceName, config, fixturesDir: join(ROOT, "fixtures") });
+  const source = await createSource({ source: sourceName, config, fixturesDir: join(ROOT, "fixtures") });
   const result = await buildSite({ config, source, now, outDir });
   if (args["fail-on-warning"] && (result.warnings.length || result.skipped.length)) {
     console.error("警告があるため失敗扱いにします（--fail-on-warning）");

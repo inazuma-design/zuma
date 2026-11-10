@@ -11,7 +11,8 @@
 | 文書 | 内容 |
 |---|---|
 | [docs/operations.md](docs/operations.md) | 作品の登録・修正・非掲載の手順（ゆゆさん／ZUMA 向け） |
-| [docs/deployment.md](docs/deployment.md) | Google 側の設定、GitHub Secrets、Pages、独自ドメイン、公開当日のチェック |
+| [docs/publish-xserver.md](docs/publish-xserver.md) | **GitHub を使わない公開**。パソコンで作って ZIP をエックスサーバーに置く（最終形） |
+| [docs/deployment.md](docs/deployment.md) | GitHub Actions / Pages で自動公開する場合の設定（作品を集めている間の仮設） |
 | [docs/design-guide.md](docs/design-guide.md) | 配色・余白・文字・カード・画像の判断基準 |
 | [docs/checklist.md](docs/checklist.md) | 未確定事項と、人が行う外部作業の一覧 |
 
@@ -32,7 +33,8 @@ npm ci
 npm test                           # 自動テスト
 npm run build:fixtures             # 公開前の状態（予告ページだけ）を dist/ に出力
 npm run build:fixtures:published   # 公開後の状態（作品一覧・作品ページ）を dist/ に出力
-npm run serve                      # http://localhost:4173/fudemoji-sotsugyo/ で dist/ を確認
+npm run serve                      # http://localhost:4173/zuma/ で dist/ を確認
+npm run release                    # 本番データで作って site.zip にまとめる（.env が必要）
 ```
 
 公開判定の時刻は `--now` で自由に指定できます。

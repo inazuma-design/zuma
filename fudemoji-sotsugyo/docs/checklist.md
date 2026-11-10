@@ -21,7 +21,17 @@
 - [ ] 画像の形式（HEIC は不可。JPEG/PNG）とサイズ（10MB まで）の案内が伝わるか
 - [ ] 1 人 1 作品の重複に気づいたときの連絡先
 
-## ZUMA が行う外部作業（[deployment.md](deployment.md) の順）
+## 最終形（GitHub を使わない、先生の資産にする）— [publish-xserver.md](publish-xserver.md)
+
+- [ ] 先生の Google アカウントを確認し、Drive フォルダとシートを共有（最終的に所有権を譲渡）
+- [ ] 先生のエックスサーバーでサブドメイン `sotsugyo` を追加、無料 SSL
+- [ ] `site.config.json` の `customDomain` を設定
+- [ ] ZUMA のパソコンに Node.js と鍵ファイルを用意し、`npm run release` が通ることを確認
+- [ ] 12/1 に ZIP をアップロードして公開
+- [ ] GitHub Actions の自動更新を止める（二重公開を避ける）
+- [ ] Google Cloud プロジェクトに先生をオーナー追加
+
+## ZUMA が行う外部作業（[deployment.md](deployment.md) の順、GitHub Pages を使う場合）
 
 - [ ] Google フォームとスプレッドシートの作成、H〜J 列の追加
 - [ ] Google Cloud プロジェクト、Sheets / Drive API の有効化、サービスアカウントと JSON 鍵

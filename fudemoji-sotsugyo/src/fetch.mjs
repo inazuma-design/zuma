@@ -28,7 +28,7 @@ export function fixturesSource(fixturesDir, { rows } = {}) {
 }
 
 /** CLI / 環境変数から取得元を組み立てる。 */
-export function createSource({ source, config, env = process.env, fixturesDir }) {
+export async function createSource({ source, config, env = process.env, fixturesDir }) {
   const sheetId = env.FUDEMOJI_SHEET_ID || config.sheet?.id;
   const gid = env.FUDEMOJI_SHEET_GID || config.sheet?.gid;
   const needSheet = () => {
@@ -44,8 +44,15 @@ export function createSource({ source, config, env = process.env, fixturesDir })
       return publicCsvSource({ sheetId, gid });
     case "service-account": {
       needSheet();
-      const raw = env.GOOGLE_SERVICE_ACCOUNT_JSON;
-      if (!raw) throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON が未設定です（GitHub Secrets に登録してください）");
+      let raw = env.GOOGLE_SERVICE_ACCOUNT_JSON;
+      if (!raw && env.GOOGLE_SERVICE_ACCOUNT_FILE) {
+        try {
+          raw = await readFile(env.GOOGLE_SERVICE_ACCOUNT_FILE, "utf8");
+        } catch {
+          throw new Error(`鍵ファイルが読めません: ${env.GOOGLE_SERVICE_ACCOUNT_FILE}`);
+        }
+      }
+      if (!raw) throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON（鍵の中身）か GOOGLE_SERVICE_ACCOUNT_FILE（鍵ファイルのパス）が未設定です");
       let sa;
       try { sa = JSON.parse(raw); } catch { throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON が JSON として読めません"); }
       return serviceAccountSource({ serviceAccount: sa, sheetId, gid });
