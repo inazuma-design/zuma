@@ -16,9 +16,18 @@ export function nl2br(text) {
 
 const attr = escapeHtml;
 
-/** 展覧会名の「2期」のような 数字＋期 を途中で改行させない。 */
+/**
+ * 展覧会名を語のまとまり（.kw）ごとに包み、まとまりの間でだけ改行させる。
+ * 「作家養成講｜座」「2｜期」のような途中改行を防ぐ。区切りは 空白・数字＋期・よく使う語。
+ * 区切りに当たらない部分も 1 つのまとまりにする（例「デジタル筆文字」）。
+ */
+const TITLE_PHRASES = /(\s+|\d+\s*期|作家養成講座|養成講座|講座|卒業制作展|卒業制作)/;
 function titleHtml(title) {
-  return escapeHtml(title).replace(/(\d+)\s*期/g, '<span class="nobr">$1期</span>');
+  return String(title)
+    .split(TITLE_PHRASES)
+    .filter(Boolean)
+    .map((part) => (/^\s+$/.test(part) ? " " : `<span class="kw">${escapeHtml(part.replace(/(\d+)\s*期/, "$1期"))}</span>`))
+    .join("");
 }
 
 function publishDateLabel(publishAt) {

@@ -152,9 +152,15 @@ test("ヒーローに先生の作品（heroArt）があれば、額装画像と�
   assert.ok(!none.includes("hero-art"));
 });
 
-test("展覧会名の「2期」は途中で改行されないよう nobr で包む", () => {
+test("展覧会名は語のまとまり（kw）ごとに包み、「作家養成講｜座」のような途中改行を防ぐ", () => {
+  const h1 = '<h1 class="hero-title"><span class="kw">デジタル筆文字</span><span class="kw">作家養成講座</span> <span class="kw">2期</span> <span class="kw">卒業制作展</span></h1>';
   const html = renderIndex({ config, works: [], urls });
-  assert.match(html, /<h1 class="hero-title">デジタル筆文字作家養成講座 <span class="nobr">2期<\/span> 卒業制作展<\/h1>/);
+  assert.ok(html.includes(h1), "トップの見出し");
   const teaser = renderTeaser({ config, urls });
-  assert.match(teaser, /<span class="nobr">2期<\/span>/);
+  assert.ok(teaser.includes(h1), "予告ページの見出し");
+});
+
+test("展覧会名の語の区切りは HTML として無害化される", () => {
+  const html = renderIndex({ config: { ...config, title: "<b>講座</b> 3 期" }, works: [], urls });
+  assert.ok(html.includes('<span class="kw">&lt;b&gt;</span><span class="kw">講座</span><span class="kw">&lt;/b&gt;</span> <span class="kw">3期</span>'));
 });
