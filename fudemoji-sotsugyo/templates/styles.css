@@ -49,6 +49,8 @@ a:focus-visible, button:focus-visible { outline: none; box-shadow: var(--focus);
 button { font: inherit; color: inherit; }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: .04em; margin: 0; }
 .nobr { white-space: nowrap; }
+/* 展覧会名の語のまとまり。まとまりの間でだけ改行し、画面より長いときだけ中で折る */
+.kw { display: inline-block; max-width: 100%; }
 
 .skip { position: absolute; left: -999px; top: 8px; background: var(--mat); padding: 8px 12px; border-radius: 6px; z-index: 50; }
 .skip:focus { left: 8px; }
