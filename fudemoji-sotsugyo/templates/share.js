@@ -7,8 +7,14 @@
     var type = nav ? nav.type : "navigate";
     if (type !== "back_forward" && !location.hash) {
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-      window.scrollTo(0, 0);
-      window.addEventListener("load", function () { window.scrollTo(0, 0); });
+      var toTop = function () {
+        window.scrollTo(0, 0);
+        // 埋め込み（iframe）の中で表示されているときは、外側の枠も先頭まで送る
+        var first = document.body && document.body.firstElementChild;
+        if (first && first.scrollIntoView) first.scrollIntoView({ block: "start" });
+      };
+      toTop();
+      window.addEventListener("load", toTop);
     }
   } catch (e) { /* 何もしない */ }
 })();
