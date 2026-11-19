@@ -132,9 +132,16 @@ test("一覧の画像は srcset で高解像度版も渡し、原寸で開くリ
   assert.match(html, /sizes="/);
 });
 
-test("作品ページ: 原寸画像を直接開くリンクがある", () => {
+test("作品ページ: 画像をページ内で画面いっぱいに表示するボタンとダイアログがあり、別タブは開かない", () => {
   const html = renderWork({ config, work: work(), prev: null, next: null, urls, index: 0, total: 1 });
-  assert.match(html, /<a class="open-full" href="\/fudemoji-sotsugyo\/assets\/works\/slugaaaaaa-1600\.webp" target="_blank" rel="noopener">/);
+  assert.match(html, /<button type="button" class="open-full" data-full="\/fudemoji-sotsugyo\/assets\/works\/slugaaaaaa-1600\.webp">/);
+  assert.match(html, /<dialog class="lightbox" id="work-full"/);
+  assert.ok(!html.includes('target="_blank" rel="noopener">原寸'), "画像を別タブで開くリンクは使わない");
+});
+
+test("一覧のライトボックスにも別タブを開くリンクは無い", () => {
+  const html = renderIndex({ config, works: [work()], urls });
+  assert.ok(!html.includes("lb-full"));
 });
 
 test("ヒーローに先生の作品（heroArt）があれば、額装画像とキャプションを出し、トップの OGP に使う", () => {

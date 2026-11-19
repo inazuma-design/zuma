@@ -17,8 +17,7 @@
   var img = dialog.querySelector(".lb-img");
   var title = dialog.querySelector(".lb-title");
   var author = dialog.querySelector(".lb-author");
-  var link = dialog.querySelector(".lb-link:not(.lb-full)");
-  var fullLink = dialog.querySelector(".lb-full");
+  var link = dialog.querySelector(".lb-link");
   var prevBtn = dialog.querySelector("[data-lb-prev]");
   var nextBtn = dialog.querySelector("[data-lb-next]");
   var current = -1;
@@ -33,7 +32,6 @@
     title.textContent = it.title;
     author.textContent = it.author;
     link.href = it.href;
-    fullLink.href = it.full;
     prevBtn.hidden = i === 0;
     nextBtn.hidden = i === items.length - 1;
   }

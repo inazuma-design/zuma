@@ -225,7 +225,12 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
 .work-stage { flex-wrap: wrap; }
 .work-stage img { width: auto; max-width: 100%; max-height: 82vh; height: auto; object-fit: contain; }
 .work-stage-tools { flex-basis: 100%; text-align: right; margin-top: 8px; font-size: 13px; }
-.work-stage-tools a { display: inline-flex; align-items: center; min-height: 36px; }
+.work-stage-tools .open-full {
+  background: none; border: 0; padding: 0; cursor: pointer; font-size: 13px;
+  color: var(--kaki-text); text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px;
+  display: inline-flex; align-items: center; min-height: 36px;
+}
+.work-stage-tools .open-full:hover { color: var(--sumi); }
 .work-info { padding: 28px 4px 0; max-width: 36em; }
 .work-page-title { font-size: 30px; line-height: 1.4; }
 .work-page-author { margin: 8px 0 0; color: var(--sumi-soft); }

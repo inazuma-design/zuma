@@ -22,3 +22,19 @@
     say(url);
   });
 })();
+
+// 作品ページ: 「画面いっぱいで見る」。ページ内のダイアログに 1600px の画像を出す（別タブは開かない）
+(function () {
+  var btn = document.querySelector(".open-full");
+  var dialog = document.getElementById("work-full");
+  if (!btn || !dialog || typeof dialog.showModal !== "function") return;
+  var img = dialog.querySelector(".lb-img");
+  btn.addEventListener("click", function () {
+    img.src = btn.getAttribute("data-full");
+    dialog.showModal();
+    dialog.querySelector("[data-lb-close]").focus();
+  });
+  dialog.querySelector("[data-lb-close]").addEventListener("click", function () { dialog.close(); });
+  dialog.addEventListener("click", function (e) { if (e.target === dialog) dialog.close(); });
+  dialog.addEventListener("close", function () { img.removeAttribute("src"); btn.focus(); });
+})();
