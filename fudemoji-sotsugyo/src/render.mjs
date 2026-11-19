@@ -9,6 +9,11 @@ export function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+/** メインコピー。改行ごとに行を span で包む（縦書きで 2 列目を字下げするため）。 */
+function headlineHtml(text) {
+  return String(text ?? "").replace(/\r\n?/g, "\n").split("\n").map((l) => `<span class="hl-line">${escapeHtml(l)}</span>`).join("<br>");
+}
+
 /** 改行だけ <br> にする。それ以外の HTML は一切通さない（自動リンクもしない）。 */
 export function nl2br(text) {
   return escapeHtml(text).replace(/\n/g, "<br>");
@@ -137,7 +142,7 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
     <p class="hero-date">${publishDateLabel(config.publishAt)} 公開</p>
   </div>
   ${heroArtFigure(heroArt, urls)}
-  <p class="hero-headline">${nl2br(config.hero?.headline || "")}</p>
+  <p class="hero-headline">${headlineHtml(config.hero?.headline || "")}</p>
 </header>
 <main>
 ${config.digitalIntro ? `<section class="about" id="about" aria-label="デジタル筆文字について">
@@ -236,7 +241,7 @@ export function renderTeaser({ config, urls, assetVersion = "", heroArt = null }
   <h1 class="hero-title">${titleHtml(config.title)}</h1>
   ${heroArtFigure(heroArt, urls)}
   <p class="teaser-date"><span class="teaser-date-num">${escapeHtml(dateLabel)}</span>公開予定</p>
-  ${config.hero?.headline ? `<p class="hero-headline">${nl2br(config.hero.headline)}</p>` : ""}
+  ${config.hero?.headline ? `<p class="hero-headline">${headlineHtml(config.hero.headline)}</p>` : ""}
   <p class="teaser-note">受講生の卒業作品を、ここに展示します。公開までもう少しお待ちください。</p>
 </main>
 ${footer(config, urls)}
