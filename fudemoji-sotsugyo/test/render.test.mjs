@@ -174,7 +174,9 @@ test("展覧会名の語の区切りは HTML として無害化される", () =>
 
 test("メインコピーの改行（\\n）は <br> になり、縦書きでは左の列に続く", () => {
   const html = renderIndex({ config: { ...config, hero: { ...config.hero, headline: "筆文字は、もっと\n自由になれる。" } }, works: [], urls });
-  assert.match(html, /<p class="hero-headline">筆文字は、もっと<br>自由になれる。<\/p>/);
+  assert.match(html, /<p class="hero-headline"><span class="hl-line">筆文字は、もっと<\/span><br><span class="hl-line">自由になれる。<\/span><\/p>/);
   const teaser = renderTeaser({ config: { ...config, hero: { ...config.hero, headline: "A\nB" } }, urls });
-  assert.match(teaser, /<p class="hero-headline">A<br>B<\/p>/);
+  assert.match(teaser, /<p class="hero-headline"><span class="hl-line">A<\/span><br><span class="hl-line">B<\/span><\/p>/);
+  const one = renderIndex({ config, works: [], urls });
+  assert.match(one, /<p class="hero-headline"><span class="hl-line">筆文字は、もっと自由になれる。<\/span><\/p>/);
 });

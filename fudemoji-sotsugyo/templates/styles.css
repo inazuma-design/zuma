@@ -183,6 +183,8 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
     writing-mode: vertical-rl; text-orientation: mixed;
     font-size: 40px; line-height: 1.9; margin: 0; padding-right: 8px;
   }
+  /* 縦書きの 2 列目以降は 1 文字分下げて始める */
+  .hero .hero-headline .hl-line + .hl-line { padding-inline-start: 1em; }
   .section-title { font-size: 28px; }
 }
 
