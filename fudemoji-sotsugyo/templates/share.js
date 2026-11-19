@@ -1,3 +1,18 @@
+// 作品ページを新しく開いたときは必ず先頭から表示する。
+// 一覧の下のほうからカードを押して移動したとき、環境によっては前のスクロール位置が引き継がれ、
+// 画像が見切れた状態で始まることがあるため。「戻る」での位置復元は邪魔しない。
+(function () {
+  try {
+    var nav = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+    var type = nav ? nav.type : "navigate";
+    if (type !== "back_forward" && !location.hash) {
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      window.scrollTo(0, 0);
+      window.addEventListener("load", function () { window.scrollTo(0, 0); });
+    }
+  } catch (e) { /* 何もしない */ }
+})();
+
 // 「この作品を共有」。Web Share API が使えればシェアシートを開き、無ければ URL をコピーする。
 (function () {
   var btn = document.querySelector(".share");
