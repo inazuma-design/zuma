@@ -137,7 +137,7 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
     <p class="hero-date">${publishDateLabel(config.publishAt)} 公開</p>
   </div>
   ${heroArtFigure(heroArt, urls)}
-  <p class="hero-headline">${escapeHtml(config.hero?.headline || "")}</p>
+  <p class="hero-headline">${nl2br(config.hero?.headline || "")}</p>
 </header>
 <main>
 ${config.digitalIntro ? `<section class="about" id="about" aria-label="デジタル筆文字について">
@@ -236,7 +236,7 @@ export function renderTeaser({ config, urls, assetVersion = "", heroArt = null }
   <h1 class="hero-title">${titleHtml(config.title)}</h1>
   ${heroArtFigure(heroArt, urls)}
   <p class="teaser-date"><span class="teaser-date-num">${escapeHtml(dateLabel)}</span>公開予定</p>
-  ${config.hero?.headline ? `<p class="hero-headline">${escapeHtml(config.hero.headline)}</p>` : ""}
+  ${config.hero?.headline ? `<p class="hero-headline">${nl2br(config.hero.headline)}</p>` : ""}
   <p class="teaser-note">受講生の卒業作品を、ここに展示します。公開までもう少しお待ちください。</p>
 </main>
 ${footer(config, urls)}
