@@ -168,7 +168,7 @@ ${footer(config, urls)}
   <button type="button" class="lb-close" data-lb-close aria-label="閉じる">×</button>
   <figure class="lb-figure">
     <img class="lb-img" alt="">
-    <figcaption class="lb-caption"><span class="lb-title"></span><span class="lb-author"></span><a class="lb-link" href="#">作品ページを見る</a><a class="lb-link lb-full" href="#" target="_blank" rel="noopener">原寸で開く</a></figcaption>
+    <figcaption class="lb-caption"><span class="lb-title"></span><span class="lb-author"></span><a class="lb-link" href="#">作品ページを見る</a></figcaption>
   </figure>
   <button type="button" class="lb-nav lb-prev" data-lb-prev aria-label="前の作品">‹</button>
   <button type="button" class="lb-nav lb-next" data-lb-next aria-label="次の作品">›</button>
@@ -194,7 +194,7 @@ export function renderWork({ config, work, prev, next, urls, index, total, asset
 <main class="work-main">
   <figure class="work-stage">
     <img src="${attr(urls.path(`assets/works/${img.full}`))}" width="${img.width}" height="${img.height}" alt="${attr(work.nickname)}さんの作品「${attr(work.title)}」" fetchpriority="high" decoding="async">
-    <figcaption class="work-stage-tools"><a class="open-full" href="${attr(urls.path(`assets/works/${img.full}`))}" target="_blank" rel="noopener">原寸で開く（指で拡大できます）</a></figcaption>
+    <figcaption class="work-stage-tools"><button type="button" class="open-full" data-full="${attr(urls.path(`assets/works/${img.full}`))}">画面いっぱいで見る（指で拡大できます）</button></figcaption>
   </figure>
   <section class="work-info">
     <h1 class="work-page-title">${escapeHtml(work.title)}</h1>
@@ -213,6 +213,13 @@ export function renderWork({ config, work, prev, next, urls, index, total, asset
   </nav>
 </main>
 ${footer(config, urls)}
+<dialog class="lightbox" id="work-full" aria-label="作品の拡大表示">
+  <button type="button" class="lb-close" data-lb-close aria-label="閉じる">×</button>
+  <figure class="lb-figure">
+    <img class="lb-img" alt="${attr(work.nickname)}さんの作品「${attr(work.title)}」">
+    <figcaption class="lb-caption"><span class="lb-title">${escapeHtml(work.title)}</span><span class="lb-author">${escapeHtml(work.nickname)}</span></figcaption>
+  </figure>
+</dialog>
 <script src="${attr(urls.path("assets/share.js") + v)}" defer></script>
 </body>
 </html>

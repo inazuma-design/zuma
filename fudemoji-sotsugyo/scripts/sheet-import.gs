@@ -78,7 +78,8 @@ function importFromFolder() {
   var added = 0;
   for (var k = 0; k < files.length; k++) {
     var name = files[k].getName();
-    var base = name.replace(/\.[A-Za-z0-9]+$/, "");
+    // 拡張子を取る。「作品名.jpg.JPG」のように二重に付いていても全部取る
+    var base = name.replace(/(\.(jpe?g|png|webp|heic|gif))+$/i, "").replace(/\.[A-Za-z0-9]+$/, "");
     var parts = base.split(/[_＿　]/);
     var nick = parts.shift().trim();
     var title = parts.join(" ").trim();
