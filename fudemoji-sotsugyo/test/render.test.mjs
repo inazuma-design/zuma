@@ -171,3 +171,10 @@ test("展覧会名の語の区切りは HTML として無害化される", () =>
   const html = renderIndex({ config: { ...config, title: "<b>講座</b> 3 期" }, works: [], urls });
   assert.ok(html.includes('<span class="kw">&lt;b&gt;</span><span class="kw">講座</span><span class="kw">&lt;/b&gt;</span> <span class="kw">3期</span>'));
 });
+
+test("メインコピーの改行（\\n）は <br> になり、縦書きでは左の列に続く", () => {
+  const html = renderIndex({ config: { ...config, hero: { ...config.hero, headline: "筆文字は、もっと\n自由になれる。" } }, works: [], urls });
+  assert.match(html, /<p class="hero-headline">筆文字は、もっと<br>自由になれる。<\/p>/);
+  const teaser = renderTeaser({ config: { ...config, hero: { ...config.hero, headline: "A\nB" } }, urls });
+  assert.match(teaser, /<p class="hero-headline">A<br>B<\/p>/);
+});
