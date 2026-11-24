@@ -31,9 +31,12 @@ export async function buildSite({ config, source, now, outDir, templatesDir = jo
   const rows = await source.loadRows();
   const { works: candidates, warnings } = rowsToWorks(rows, { term: config.term });
   for (const w of warnings) log.warn(`⚠ ${w}`);
-  const published = isPublished(config.publishAt, now);
+  // 先行公開（config.earlyPreview）: 公開日前でも作品まで出す。公開日までは検索よけ（noindex・robots Disallow・sitemap なし）
+  const onDate = isPublished(config.publishAt, now);
+  const published = onDate || config.earlyPreview === true;
+  const noindex = published && !onDate;
   const urls = siteUrls(config);
-  log.info(`取得元: ${source.name} ／ 候補 ${candidates.length} 作品 ／ 判定時刻 ${formatJst(now)} ／ ${published ? "公開" : "公開前（予告ページのみ）"}`);
+  log.info(`取得元: ${source.name} ／ 候補 ${candidates.length} 作品 ／ 判定時刻 ${formatJst(now)} ／ ${onDate ? "公開" : published ? "先行公開（検索よけ）" : "公開前（予告ページのみ）"}`);
 
   // 画像は公開前でも検証のために処理する（公開前は一時ディレクトリに出して捨てる）
   const imageDir = published ? join(outDir, "assets", "works") : await mkdtemp(join(tmpdir(), "fudemoji-check-"));
@@ -86,15 +89,19 @@ export async function buildSite({ config, source, now, outDir, templatesDir = jo
     await writeFile(join(target, "index.html"), renderTeaser({ config, urls, assetVersion, heroArt }));
     await writeFile(join(target, "robots.txt"), `User-agent: *\nDisallow: /\n`);
   } else {
-    await writeFile(join(target, "index.html"), renderIndex({ config, works, urls, assetVersion, heroArt }));
+    await writeFile(join(target, "index.html"), renderIndex({ config, works, urls, assetVersion, heroArt, noindex }));
     for (let i = 0; i < works.length; i++) {
       const w = works[i];
       const dir = join(target, "works", w.slug);
       await mkdir(dir, { recursive: true });
-      await writeFile(join(dir, "index.html"), renderWork({ config, work: w, prev: works[i - 1] ?? null, next: works[i + 1] ?? null, urls, index: i, total: works.length, assetVersion }));
+      await writeFile(join(dir, "index.html"), renderWork({ config, work: w, prev: works[i - 1] ?? null, next: works[i + 1] ?? null, urls, index: i, total: works.length, assetVersion, noindex }));
     }
-    await writeFile(join(target, "sitemap.xml"), renderSitemap({ works, urls }));
-    await writeFile(join(target, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${urls.abs("sitemap.xml")}\n`);
+    if (noindex) {
+      await writeFile(join(target, "robots.txt"), `User-agent: *\nDisallow: /\n`);
+    } else {
+      await writeFile(join(target, "sitemap.xml"), renderSitemap({ works, urls }));
+      await writeFile(join(target, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${urls.abs("sitemap.xml")}\n`);
+    }
   }
 
   await rm(outDir, { recursive: true, force: true });

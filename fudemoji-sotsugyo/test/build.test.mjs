@@ -132,3 +132,35 @@ test("hero.image.file を設定すると、先生の作品を assets/hero-*.webp
   assert.match(index, /hero-art/);
   assert.equal(post.works.length, 5, "先生の作品は一覧に数えない");
 });
+
+// 先行公開（earlyPreview）: 公開日前でも作品まで見せるが、公開日までは検索サイトに載せない
+async function runEarly(now) {
+  const { fileURLToPath } = await import("node:url");
+  const outDir = await mkdtemp(join(tmpdir(), "dist-"));
+  const config = { ...(await loadConfig(fileURLToPath(new URL("../site.config.json", import.meta.url)))), earlyPreview: true };
+  const source = fixturesSource(fileURLToPath(new URL("../fixtures/", import.meta.url)));
+  const result = await buildSite({ config, source, now: new Date(now), outDir, log: quiet });
+  return { outDir, result };
+}
+
+test("先行公開: earlyPreview なら公開日前でも作品を出し、検索よけ（noindex・robots Disallow・sitemap なし）にする", async () => {
+  const { outDir, result } = await runEarly("2026-11-24T12:00:00+09:00");
+  assert.equal(result.published, true);
+  assert.equal(result.works.length, 5);
+  const index = await readFile(join(outDir, "index.html"), "utf8");
+  assert.match(index, /サンプルA/);
+  assert.match(index, /<meta name="robots" content="noindex, nofollow">/);
+  assert.match(index, /12月1日 公開/, "公開日の表示は変えない");
+  const work = await readFile(join(outDir, "works", result.works[0].slug, "index.html"), "utf8");
+  assert.match(work, /<meta name="robots" content="noindex, nofollow">/);
+  assert.match(await readFile(join(outDir, "robots.txt"), "utf8"), /Disallow: \//);
+  assert.ok(!(await exists(join(outDir, "sitemap.xml"))));
+});
+
+test("先行公開: 公開日を過ぎたら検索よけを外し、sitemap を出す", async () => {
+  const { outDir } = await runEarly("2026-12-01T00:05:00+09:00");
+  const index = await readFile(join(outDir, "index.html"), "utf8");
+  assert.ok(!index.includes('name="robots"'));
+  assert.ok(await exists(join(outDir, "sitemap.xml")));
+  assert.match(await readFile(join(outDir, "robots.txt"), "utf8"), /Allow: \//);
+});
