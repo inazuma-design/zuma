@@ -11,7 +11,7 @@ const quiet = { info() {}, warn() {} };
 
 async function run({ now, rows } = {}) {
   const outDir = await mkdtemp(join(tmpdir(), "dist-"));
-  const config = await loadConfig(new URL("../site.config.json", import.meta.url).pathname);
+  const config = { ...(await loadConfig(new URL("../site.config.json", import.meta.url).pathname)), earlyPreview: false };
   const source = fixturesSource(new URL("../fixtures/", import.meta.url).pathname, rows ? { rows } : {});
   const result = await buildSite({ config, source, now: new Date(now ?? "2026-12-01T00:05:00+09:00"), outDir, log: quiet });
   return { outDir, result };
@@ -68,7 +68,7 @@ test("公開後: 同じデータなら作品の URL（slug）は再ビルドし�
 
 test("公開後: 作品を非掲載にして再ビルドすると、その作品ページは消える", async () => {
   const outDir = await mkdtemp(join(tmpdir(), "dist-"));
-  const config = await loadConfig(new URL("../site.config.json", import.meta.url).pathname);
+  const config = { ...(await loadConfig(new URL("../site.config.json", import.meta.url).pathname)), earlyPreview: false };
   const fixturesDir = new URL("../fixtures/", import.meta.url).pathname;
   const rows = JSON.parse(await readFile(join(fixturesDir, "sample-works.json"), "utf8")).rows;
   const now = new Date("2026-12-02T00:00:00+09:00");
@@ -101,7 +101,7 @@ test("シートの取得に失敗したらビルドは例外で止まり、出�
   const outDir = await mkdtemp(join(tmpdir(), "dist-"));
   await mkdir(outDir, { recursive: true });
   await writeFile(join(outDir, "index.html"), "previous");
-  const config = await loadConfig(new URL("../site.config.json", import.meta.url).pathname);
+  const config = { ...(await loadConfig(new URL("../site.config.json", import.meta.url).pathname)), earlyPreview: false };
   const broken = { name: "broken", async loadRows() { throw new Error("401 Unauthorized"); }, async loadImage() {} };
   await assert.rejects(buildSite({ config, source: broken, now: new Date(), outDir, log: quiet }), /401/);
   assert.equal(await readFile(join(outDir, "index.html"), "utf8"), "previous");
@@ -120,7 +120,7 @@ test("createSource は GOOGLE_SERVICE_ACCOUNT_FILE で鍵ファイルのパス�
 
 test("hero.image.file を設定すると、先生の作品を assets/hero-*.webp に出力してトップと予告ページに使う（一覧には入れない）", async () => {
   const outDir = await mkdtemp(join(tmpdir(), "dist-"));
-  const base = await loadConfig(new URL("../site.config.json", import.meta.url).pathname);
+  const base = { ...(await loadConfig(new URL("../site.config.json", import.meta.url).pathname)), earlyPreview: false };
   const config = { ...base, hero: { ...base.hero, image: { file: "sample-03.png", caption: "筆文字似顔絵師Hira「サンプル」", alt: "先生の作品" } } };
   const fixturesDir = new URL("../fixtures/", import.meta.url).pathname;
   const pre = await buildSite({ config, source: fixturesSource(fixturesDir), now: new Date("2026-11-20T00:00:00+09:00"), outDir, log: quiet });
