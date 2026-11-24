@@ -50,6 +50,14 @@ test("トップページ: 先生のごあいさつと講座紹介は原稿があ
   assert.match(withText, /講座の紹介/);
 });
 
+test("トップページ: 先生のごあいさつは作品一覧の後に出し、空行で段落に分ける（作品に早くたどり着けるように）", () => {
+  const html = renderIndex({ config: { ...config, greeting: "一段落目。\n続き。\n\n二段落目。" }, works: [work()], urls });
+  const g = html.indexOf('id="greeting"');
+  const w = html.indexOf('id="works"');
+  assert.ok(g > 0 && w > 0 && w < g, "works が greeting より前");
+  assert.ok(html.includes('<div class="greeting-body"><p>一段落目。<br>続き。</p><p>二段落目。</p></div>'));
+});
+
 test("トップページ: 作品が 0 件なら「展示準備中」を出し、エラーにしない", () => {
   const html = renderIndex({ config, works: [], urls });
   assert.match(html, /展示準備中/);
