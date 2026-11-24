@@ -156,26 +156,26 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
   <p class="hero-headline">${headlineHtml(config.hero?.headline || "")}</p>
 </header>
 <main>
-${config.digitalIntro ? `<section class="about" id="about" aria-label="デジタル筆文字について">
-  <p class="about-body">${nl2br(config.digitalIntro)}</p>
-</section>` : ""}
 <section class="works" id="works" aria-labelledby="works-heading">
   <h2 id="works-heading" class="section-title">${escapeHtml(config.galleryHeading || "それぞれの一筆、それぞれの世界。")}</h2>
   ${config.galleryLead ? `<p class="gallery-lead">${nl2br(config.galleryLead)}</p>` : ""}
   <p class="count-line">全 <span class="count">${count}</span> 作品</p>
   ${gallery}
 </section>
+${config.digitalIntro ? `<section class="about" id="about" aria-label="デジタル筆文字について">
+  <p class="about-body">${nl2br(config.digitalIntro)}</p>
+</section>` : ""}
 ${config.greeting ? `<section class="greeting" id="greeting" aria-labelledby="greeting-heading">
-  <h2 id="greeting-heading" class="section-title">Hira先生からのごあいさつ</h2>
+  <h2 id="greeting-heading" class="section-title"><span class="latin">Hira</span>先生からのごあいさつ</h2>
   <div class="greeting-body">${paragraphs(config.greeting)}</div>
 </section>` : ""}
 ${config.courseIntro || config.links ? `<section class="course" id="course" aria-labelledby="course-heading">
   <h2 id="course-heading" class="section-title">${escapeHtml(config.courseHeading || "あなたも、デジタル筆文字の世界へ。")}</h2>
   ${config.courseIntro ? `<p class="course-body">${nl2br(config.courseIntro)}</p>` : ""}
   <ul class="course-links">
-    ${config.links?.line ? `<li><a href="${attr(config.links.line)}" target="_blank" rel="noopener noreferrer">公式LINE</a></li>` : ""}
-    ${config.links?.homepage ? `<li><a href="${attr(config.links.homepage)}" target="_blank" rel="noopener noreferrer">ホームページ</a></li>` : ""}
-    ${config.links?.instagram ? `<li><a href="${attr(config.links.instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a></li>` : ""}
+    ${config.links?.line ? `<li><a class="btn-primary" href="${attr(config.links.line)}" target="_blank" rel="noopener noreferrer">公式LINE</a></li>` : ""}
+    ${config.links?.homepage ? `<li><a class="btn-secondary" href="${attr(config.links.homepage)}" target="_blank" rel="noopener noreferrer">ホームページ</a></li>` : ""}
+    ${config.links?.instagram ? `<li><a class="btn-text" href="${attr(config.links.instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a></li>` : ""}
   </ul>
 </section>` : ""}
 </main>
