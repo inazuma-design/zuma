@@ -51,14 +51,14 @@ function publishDateLabel(publishAt) {
   return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", month: "long", day: "numeric" }).format(d);
 }
 
-function head({ title, description, canonical, ogImage, ogType = "website", urls, assetVersion = "", extraCss = "" }) {
+function head({ title, description, canonical, ogImage, ogType = "website", urls, assetVersion = "", extraCss = "", noindex = false }) {
   const v = assetVersion ? `?v=${encodeURIComponent(assetVersion)}` : "";
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(title)}</title>
+${noindex ? '<meta name="robots" content="noindex, nofollow">\n' : ""}<title>${escapeHtml(title)}</title>
 <meta name="description" content="${attr(description)}">
 <link rel="canonical" href="${attr(canonical)}">
 <meta property="og:type" content="${ogType}">
@@ -130,7 +130,7 @@ function workCard(w, urls) {
 </li>`;
 }
 
-export function renderIndex({ config, works, urls, assetVersion = "", heroArt = null }) {
+export function renderIndex({ config, works, urls, assetVersion = "", heroArt = null, noindex = false }) {
   const v = assetVersion ? `?v=${encodeURIComponent(assetVersion)}` : "";
   const description = config.hero?.description || `${config.title}。受講生の卒業作品をオンラインで展示しています。`;
   const count = works.length;
@@ -141,7 +141,7 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
     ? `<ul class="work-grid" id="work-grid">${works.map((w) => workCard(w, urls)).join("\n")}</ul>`
     : `<p class="empty">展示準備中です。作品の掲載まで、もう少しお待ちください。</p>`;
 
-  return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: heroImage, urls, assetVersion })}
+  return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: heroImage, urls, assetVersion, noindex })}
 <body class="page-index">
 <a class="skip" href="#works">作品一覧へ</a>
 <header class="hero${heroArt ? " has-art" : ""}">
@@ -195,13 +195,13 @@ ${footer(config, urls)}
 `;
 }
 
-export function renderWork({ config, work, prev, next, urls, index, total, assetVersion = "" }) {
+export function renderWork({ config, work, prev, next, urls, index, total, assetVersion = "", noindex = false }) {
   const v = assetVersion ? `?v=${encodeURIComponent(assetVersion)}` : "";
   const title = `${work.title} ｜ ${work.nickname} ｜ ${config.title}`;
   const description = work.comment ? work.comment.replace(/\s+/g, " ").slice(0, 120) : `${work.nickname}さんの卒業作品「${work.title}」。${config.title}より。`;
   const canonical = urls.workAbs(work.slug);
   const img = work.image;
-  return `${head({ title, description, canonical, ogImage: urls.abs(`assets/works/${img.ogp}`), ogType: "article", urls, assetVersion })}
+  return `${head({ title, description, canonical, ogImage: urls.abs(`assets/works/${img.ogp}`), ogType: "article", urls, assetVersion, noindex })}
 <body class="page-work">
 <header class="work-head">
   <a class="back" href="${attr(urls.path("#works"))}">← 展覧会にもどる</a>
