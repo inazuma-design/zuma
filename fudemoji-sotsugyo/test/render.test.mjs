@@ -121,7 +121,15 @@ test("トップページ: デジタル筆文字の紹介文と卒業生への一
   assert.match(html, /id="about"/);
   assert.match(html, /紙では&lt;できない&gt;重なりも、<br>/);
   assert.match(html, /一人ひとりの一筆に、敬意をこめて。/);
-  assert.ok(html.indexOf('id="about"') < html.indexOf('id="works"'), "紹介文はギャラリーの前");
+  // 作品にすぐ出会えるよう、紹介文は作品一覧の後（見終えた人への一言）に置く
+  assert.ok(html.indexOf('id="works"') < html.indexOf('id="about"'), "紹介文はギャラリーの後");
+});
+
+test("トップページ: 最後の案内は公式LINEを主ボタン、ホームページを枠線、Instagramを文字リンクにして強さに差をつける", () => {
+  const html = renderIndex({ config, works: [work()], urls });
+  assert.match(html, /<a class="btn-primary" href="https:\/\/lin\.ee\/LUsnOJX"[^>]*>公式LINE<\/a>/);
+  assert.match(html, /<a class="btn-secondary" href="https:\/\/fudemojinigaoesihira\.com\/"[^>]*>ホームページ<\/a>/);
+  assert.match(html, /<a class="btn-text" href="https:\/\/www\.instagram\.com\/hirac_han"[^>]*>Instagram<\/a>/);
 });
 
 test("トップページ: OGP 画像は同意済みの代表作品を指定したときだけ出す", () => {

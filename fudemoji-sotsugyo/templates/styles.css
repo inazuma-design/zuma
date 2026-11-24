@@ -9,7 +9,7 @@
   --washi: #FDF8F2;      /* 背景 */
   --mat: #FFFFFF;        /* 額装のマット台紙 */
   --sumi: #2B2620;       /* 主な文字 */
-  --sumi-soft: #6B6053;  /* 補助の文字 */
+  --sumi-soft: #5A5046;  /* 補助の文字（地との差 7.4:1。小さい文字でも沈まないように一段濃く） */
   --kaki: #A85A16;       /* アクセント：柿色（数字・枠） */
   --kaki-text: #8A4712;  /* 小さな文字のリンク用の濃い柿色（コントラスト 6.6:1） */
   --shu: #B5453A;        /* 控えめな強調（ほぼ使わない） */
@@ -76,7 +76,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 }
 .hero-headline {
   font-family: var(--font-display);
-  font-size: 24px; /* 展覧会名（26px）より一段小さく。まず「卒業制作展」と伝わるように */
+  font-size: 19px; /* 展覧会名（26px）の7割ほど。まず「卒業制作展」と伝わるように */
   line-height: 1.5;
   letter-spacing: .06em;
   margin: 28px 0 0;
@@ -88,7 +88,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 .hero.has-art .hero-title { order: 2; }
 .hero.has-art .hero-art { order: 3; margin-top: 24px; }
 .hero.has-art .hero-headline { order: 4; }
-.hero.has-art .hero-sub { order: 5; }
+.hero.has-art .hero-sub { order: 5; margin-top: 6px; } /* キャッチと副題をひと組に見せる */
 .hero.has-art .hero-desc { order: 6; }
 .hero.has-art .hero-date { order: 7; }
 .hero-sub { margin: 14px 0 0; font-size: 17px; color: var(--sumi-soft); }
@@ -118,7 +118,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing:
 main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 auto; }
 .section-title { font-size: 24px; line-height: 1.5; }
 .count-line { margin: 10px 0 0; color: var(--sumi-soft); font-size: 15px; letter-spacing: .06em; }
-.count { font-family: var(--font-display); font-size: 26px; color: var(--kaki); margin: 0 .1em; }
+.count { font-family: var(--font-display); font-size: 26px; color: var(--sumi); /* 押せない数字には茶を使わない（茶は押せる所だけ） */ margin: 0 .1em; }
 .empty { margin: 32px 0; color: var(--sumi-soft); }
 
 /* ---------- 作品グリッド ---------- */
@@ -140,7 +140,7 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   box-shadow: var(--shadow);
   border-radius: 2px;
 }
-.work-frame img { width: 100%; height: auto; }
+.work-frame img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain; } /* 枠を正方形にそろえ、段の高さの不揃いと作品ごとの大きさの差をなくす。違う比率は額の中に余白をつけて収める */
 .work-caption { padding: 16px 0 0; } /* 文字の左端を額の外枠に揃える */
 .work-title { font-size: 21px; line-height: 1.5; }
 .work-title a { color: inherit; text-decoration: none; }
@@ -155,7 +155,7 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.work-actions { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 0 14px; align-items: center; font-size: 14px; }
+.work-actions { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 0 24px; /* 押し間違えないよう間を広く */ align-items: center; font-size: 14px; }
 .work-actions > * { min-height: 44px; display: inline-flex; align-items: center; }
 .work-link { font-weight: 500; }
 .work-zoom {
@@ -172,7 +172,7 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   .work-grid { grid-template-columns: repeat(2, 1fr); gap: 48px 32px; }
   .hero { padding-top: 72px; }
   .hero-title { font-size: 34px; }
-  .hero-headline { font-size: 30px; } /* 展覧会名（34px）より小さく */
+  .hero-headline { font-size: 24px; } /* 展覧会名（34px）の7割ほど */
 }
 @media (min-width: 1000px) {
   :root { --gutter: 32px; }
@@ -183,7 +183,7 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   .hero-title { font-size: 40px; }
   .hero .hero-headline {
     writing-mode: vertical-rl; text-orientation: mixed;
-    font-size: 30px; line-height: 1.9; margin: 0; padding-right: 8px; /* 展覧会名を主役に。縦書きは控えめに添える */
+    font-size: 24px; line-height: 1.9; margin: 0; padding-right: 8px; /* 展覧会名を主役に。縦書きは控えめに添える */
   }
   /* 縦書きの 2 列目以降は 1 文字分下げて始める */
   .hero .hero-headline .hl-line + .hl-line { padding-inline-start: 1em; }
@@ -191,7 +191,7 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
 }
 
 /* ---------- デジタル筆文字について（紹介文） ---------- */
-.about { padding-top: 8px; padding-bottom: 8px; }
+.about { padding-top: 0; padding-bottom: 96px; } /* 作品一覧のまとめとして作品に寄せ、あいさつとは大きく離す */
 .about-body { margin: 0; max-width: 32em; font-size: 18px; line-height: 2; }
 .gallery-lead { margin: 10px 0 0; max-width: 36em; color: var(--sumi); }
 @media (min-width: 600px) { .about-body { font-size: 19px; } }
@@ -208,6 +208,11 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   text-decoration: none; font-size: 15px; min-height: 44px; line-height: 1.5;
 }
 .course-links a:hover { background: var(--kaki); color: #fff; }
+.course-links { align-items: center; }
+.course-links .btn-primary { background: var(--kaki-text); border-color: var(--kaki-text); color: #fff; font-weight: 700; padding: 12px 26px; } /* 白文字 7.0:1 */
+.course-links .btn-primary:hover { background: var(--sumi); border-color: var(--sumi); }
+.course-links .btn-text { border-color: transparent; padding-left: 6px; padding-right: 6px; text-decoration: underline; color: var(--sumi-soft); }
+.course-links .btn-text:hover { background: none; color: var(--kaki-text); }
 
 /* ---------- フッター ---------- */
 .site-foot { margin-top: 48px; padding: 32px var(--gutter) 48px; border-top: 1px solid var(--line); text-align: center; font-size: 13px; color: var(--sumi-soft); }
@@ -267,8 +272,8 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
 .teaser { flex: 1; width: 100%; max-width: 640px; margin: 0 auto; padding: 96px var(--gutter) 48px; }
 .teaser-date { margin: 36px 0 0; font-size: 16px; color: var(--sumi-soft); letter-spacing: .08em; }
 .teaser-date-num { display: block; font-family: var(--font-display); font-size: 40px; color: var(--kaki); line-height: 1.3; margin-bottom: 4px; }
-.teaser .hero-headline { font-size: 22px; margin-top: 40px; }
-@media (min-width: 600px) { .teaser .hero-headline { font-size: 28px; } }
+.teaser .hero-headline { font-size: 19px; margin-top: 40px; }
+@media (min-width: 600px) { .teaser .hero-headline { font-size: 24px; } }
 .teaser-note { margin: 24px 0 0; color: var(--sumi-soft); }
 
 /* ---------- ライトボックス ---------- */
@@ -299,3 +304,6 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+/* 見出しの中の英字（Hira）は字間を詰めて一語に見せる */
+.latin { letter-spacing: 0; }
