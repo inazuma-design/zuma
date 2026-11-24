@@ -19,6 +19,17 @@ export function nl2br(text) {
   return escapeHtml(text).replace(/\n/g, "<br>");
 }
 
+/** 空行で段落（<p>）に分け、段落内の改行は <br> にする。HTML は通さない。 */
+export function paragraphs(text) {
+  return String(text ?? "")
+    .replace(/\r\n?/g, "\n")
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p>${nl2br(p)}</p>`)
+    .join("");
+}
+
 const attr = escapeHtml;
 
 /**
@@ -156,7 +167,7 @@ ${config.digitalIntro ? `<section class="about" id="about" aria-label="デジタ
 </section>
 ${config.greeting ? `<section class="greeting" id="greeting" aria-labelledby="greeting-heading">
   <h2 id="greeting-heading" class="section-title">Hira先生からのごあいさつ</h2>
-  <div class="greeting-body"><p>${nl2br(config.greeting)}</p></div>
+  <div class="greeting-body">${paragraphs(config.greeting)}</div>
 </section>` : ""}
 ${config.courseIntro || config.links ? `<section class="course" id="course" aria-labelledby="course-heading">
   <h2 id="course-heading" class="section-title">${escapeHtml(config.courseHeading || "あなたも、デジタル筆文字の世界へ。")}</h2>
