@@ -50,11 +50,13 @@ test("トップページ: 先生のごあいさつと講座紹介は原稿があ
   assert.match(withText, /講座の紹介/);
 });
 
-test("トップページ: 先生のごあいさつは作品一覧の後に出し、空行で段落に分ける（作品に早くたどり着けるように）", () => {
+test("トップページ: ごあいさつは作品一覧の前に出し、見出しは「ごあいさつ」（先生ご本人の言葉として読める形）。空行で段落に分ける", () => {
   const html = renderIndex({ config: { ...config, greeting: "一段落目。\n続き。\n\n二段落目。" }, works: [work()], urls });
   const g = html.indexOf('id="greeting"');
   const w = html.indexOf('id="works"');
-  assert.ok(g > 0 && w > 0 && w < g, "works が greeting より前");
+  assert.ok(g > 0 && w > 0 && g < w, "greeting が works より前");
+  assert.match(html, /<h2 id="greeting-heading" class="section-title">ごあいさつ<\/h2>/);
+  assert.ok(!html.includes("先生から"), "先生を第三者として呼ぶ言い回しを使わない");
   assert.ok(html.includes('<div class="greeting-body"><p>一段落目。<br>続き。</p><p>二段落目。</p></div>'));
 });
 
