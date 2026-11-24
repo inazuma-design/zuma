@@ -156,6 +156,10 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
   <p class="hero-headline">${headlineHtml(config.hero?.headline || "")}</p>
 </header>
 <main>
+${config.greeting ? `<section class="greeting" id="greeting" aria-labelledby="greeting-heading">
+  <h2 id="greeting-heading" class="section-title">ごあいさつ</h2>
+  <div class="greeting-body">${paragraphs(config.greeting)}</div>
+</section>` : ""}
 <section class="works" id="works" aria-labelledby="works-heading">
   <h2 id="works-heading" class="section-title">${escapeHtml(config.galleryHeading || "それぞれの一筆、それぞれの世界。")}</h2>
   ${config.galleryLead ? `<p class="gallery-lead">${nl2br(config.galleryLead)}</p>` : ""}
@@ -164,10 +168,6 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
 </section>
 ${config.digitalIntro ? `<section class="about" id="about" aria-label="デジタル筆文字について">
   <p class="about-body">${nl2br(config.digitalIntro)}</p>
-</section>` : ""}
-${config.greeting ? `<section class="greeting" id="greeting" aria-labelledby="greeting-heading">
-  <h2 id="greeting-heading" class="section-title"><span class="latin">Hira</span>先生からのごあいさつ</h2>
-  <div class="greeting-body">${paragraphs(config.greeting)}</div>
 </section>` : ""}
 ${config.courseIntro || config.links ? `<section class="course" id="course" aria-labelledby="course-heading">
   <h2 id="course-heading" class="section-title">${escapeHtml(config.courseHeading || "あなたも、デジタル筆文字の世界へ。")}</h2>
