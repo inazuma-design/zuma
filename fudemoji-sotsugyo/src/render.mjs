@@ -132,12 +132,12 @@ function workCard(w, urls) {
   <div class="work-caption">
     <h3 class="work-title"><a href="${attr(href)}">${escapeHtml(w.title)}</a></h3>
     <p class="work-author">${escapeHtml(w.nickname)}</p>
-    ${w.comment ? `<p class="work-comment">${nl2br(w.comment)}</p>` : ""}
+    <p class="work-comment">${w.comment ? nl2br(w.comment) : ""}</p>
     <div class="work-actions">
       <a class="work-link" href="${attr(href)}">作品ページを見る</a>
       <button type="button" class="work-zoom" data-lightbox="${attr(w.slug)}">拡大して見る</button>
-      ${instagramLinks(w)}
     </div>
+    <div class="work-sns">${instagramLinks(w)}</div>
   </div>
 </li>`;
 }

@@ -128,10 +128,17 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   padding: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 40px 28px;
+  gap: 0 28px; /* カード同士の縦の間は .work-sns の下の余白で取る（段をそろえるため行間は 0） */
   align-items: start;
+  --card-gap: 40px;
 }
 .work-card { margin: 0; }
+/* 横に並んだカードの「作品・作品名・名前・ひとこと・リンク・Instagram」の6段の高さをそろえる */
+@supports (grid-template-rows: subgrid) {
+  .work-card { display: grid; grid-template-rows: subgrid; grid-row: span 6; }
+  .work-caption { display: contents; }
+  .work-card > *, .work-caption > * { align-self: start; }
+}
 .work-frame {
   display: block;
   background: var(--mat);
@@ -141,8 +148,7 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   border-radius: 2px;
 }
 .work-frame img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain; } /* 枠を正方形にそろえ、段の高さの不揃いと作品ごとの大きさの差をなくす。違う比率は額の中に余白をつけて収める */
-.work-caption { padding: 16px 0 0; } /* 文字の左端を額の外枠に揃える */
-.work-title { font-size: 21px; line-height: 1.5; }
+.work-title { margin-top: 16px; font-size: 21px; line-height: 1.5; } /* 文字の左端は額の外枠に揃える */
 .work-title a { color: inherit; text-decoration: none; }
 .work-title a:hover { color: var(--kaki); }
 .work-author { margin: 4px 0 0; font-size: 16px; color: var(--sumi-soft); }
@@ -163,20 +169,23 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   color: var(--kaki-text); text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px;
 }
 .work-zoom:hover { color: var(--sumi); }
+/* Instagram はリンクの次の行。アカウントが複数あれば横に並べ、入りきらなければ折り返す */
+.work-sns { display: flex; flex-wrap: wrap; gap: 0 24px; align-items: center; padding-bottom: var(--card-gap); }
+.work-sns > .insta { min-height: 44px; }
 .insta { display: inline-flex; align-items: center; gap: 5px; text-decoration: none; color: var(--sumi-soft); }
 .insta:hover { color: var(--kaki); }
 .insta span { font-size: 13px; }
 
 @media (min-width: 600px) {
   :root { --gutter: 28px; }
-  .work-grid { grid-template-columns: repeat(2, 1fr); gap: 48px 32px; }
+  .work-grid { grid-template-columns: repeat(2, 1fr); gap: 0 32px; --card-gap: 48px; }
   .hero { padding-top: 72px; }
   .hero-title { font-size: 34px; }
   .hero-headline { font-size: 24px; } /* 展覧会名（34px）の7割ほど */
 }
 @media (min-width: 1000px) {
   :root { --gutter: 32px; }
-  .work-grid { grid-template-columns: repeat(3, 1fr); gap: 56px 36px; }
+  .work-grid { grid-template-columns: repeat(3, 1fr); gap: 0 36px; --card-gap: 56px; }
   /* 大画面では、メインコピーを展示室の掛け軸のように縦書きで添える */
   .hero { display: grid; grid-template-columns: 1fr auto; column-gap: 64px; align-items: center; padding-top: 72px; padding-bottom: 48px; }
   .hero-text { display: block; }
