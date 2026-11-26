@@ -328,3 +328,21 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
 
 /* 見出しの中の英字（Hira）は字間を詰めて一語に見せる */
 .latin { letter-spacing: 0; }
+
+/* ---------- PC の最初の画面に「ごあいさつ」と「それぞれの一筆」まで収める ----------
+   ノート PC に多い高さ 720px 前後の画面を目安に、トップを詰める。
+   先生の作品を少し小さくして右の展示名の欄を広げ（展示名を 2 行に）、上下と段落の間の余白を詰める */
+@media (min-width: 1000px) {
+  .hero.has-art { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto; padding-top: 24px; padding-bottom: 16px; }
+  .hero.has-art .hero-art-frame { padding: 10px; }
+  .hero.has-art .hero-text { padding-top: 10px; }
+  .hero.has-art .hero-title { line-height: 1.4; }
+  .hero.has-art .hero-sub { margin-top: 8px; }
+  .hero.has-art .hero-desc { margin-top: 12px; line-height: 1.75; }
+  .hero.has-art .hero-date { margin-top: 12px; }
+  .greeting { padding-top: 8px; }
+  .greeting .section-title, .works > .section-title { font-size: 26px; }
+  .greeting-body { margin-top: 10px; line-height: 1.7; }
+  .greeting-body p + p { margin-top: .6em; }
+  .works { padding-top: 20px; }
+}
