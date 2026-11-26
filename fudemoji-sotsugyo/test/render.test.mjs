@@ -246,3 +246,9 @@ test("作品名: 英語など空白で区切る言葉の続きはひとまとま
   const esc = renderIndex({ config, works: [work({ title: "<b> & </b> 春" })], urls });
   assert.ok(!esc.includes("<b>") && esc.includes("&lt;b&gt;"), "HTML は無害化する");
 });
+
+test("トップと予告ページ: 展示名の上の小見出し（講座・期）は出さない", () => {
+  const html = renderIndex({ config, works: [work()], urls });
+  const teaser = renderTeaser({ config, urls });
+  for (const h of [html, teaser]) assert.ok(!h.includes('class="hero-kicker"'));
+});
