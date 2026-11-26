@@ -198,3 +198,13 @@ test("メインコピーの改行（\\n）は <br> になり、縦書きでは�
   const one = renderIndex({ config, works: [], urls });
   assert.match(one, /<p class="hero-headline"><span class="hl-line">筆文字は、もっと自由になれる。<\/span><\/p>/);
 });
+
+test("Instagram が複数あれば、それぞれ @アカウント名 で見分けがつくリンクにする（1つなら従来どおり Instagram）", () => {
+  const two = renderWork({ config, work: work({ instagramUrl: "https://www.instagram.com/aaa/", instagramUrls: ["https://www.instagram.com/aaa/", "https://www.instagram.com/bbb/"] }), prev: null, next: null, urls, index: 0, total: 1 });
+  assert.match(two, /href="https:\/\/www\.instagram\.com\/aaa\/"[^>]*aria-label="はなこのInstagram（@aaa）"[^>]*>[\s\S]*?<span>@aaa<\/span><\/a>/);
+  assert.match(two, /href="https:\/\/www\.instagram\.com\/bbb\/"[^>]*aria-label="はなこのInstagram（@bbb）"[^>]*>[\s\S]*?<span>@bbb<\/span><\/a>/);
+  const index = renderIndex({ config, works: [work({ instagramUrls: ["https://www.instagram.com/aaa/", "https://www.instagram.com/bbb/"] })], urls });
+  assert.equal((index.match(/class="insta"/g) || []).length, 2, "一覧のカードにも2つ出す");
+  const one = renderWork({ config, work: work(), prev: null, next: null, urls, index: 0, total: 1 });
+  assert.match(one, /<span>Instagram<\/span><\/a>/);
+});

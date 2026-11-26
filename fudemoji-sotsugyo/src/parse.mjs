@@ -140,9 +140,20 @@ export function rowsToWorks(rows, { term } = {}) {
     const orderRaw = get(r, "order").trim();
     const order = orderRaw !== "" && /^-?\d+(\.\d+)?$/.test(orderRaw) ? Number(orderRaw) : null;
     const submittedAt = parseTimestamp(get(r, "submittedAt")) ?? new Date(0);
+    // Instagram は複数書かれることがある（改行・空白・読点・カンマ区切り）。正しいものは全部リンクにし、不正な部分だけ警告する
     const instagramRaw = get(r, "instagram").trim();
-    const instagramUrl = normalizeInstagram(instagramRaw);
-    if (instagramRaw && !instagramUrl) warnings.push(`行 ${rowNo}: Instagram「${instagramRaw}」の形式が不正なためリンクを出しません`);
+    const instagramUrls = [];
+    const badInstagram = [];
+    const parts = instagramRaw.split(/[\s,、，]+/).filter(Boolean);
+    for (const part of parts) {
+      // 複数あるときは @ 付きか instagram.com の URL だけをアカウントとみなす（普通の文章が単語ごとにリンクにならないように）
+      const looksLikeAccount = parts.length === 1 || /^@|instagram\.com/i.test(part);
+      const u = looksLikeAccount ? normalizeInstagram(part) : null;
+      if (!u) badInstagram.push(part);
+      else if (!instagramUrls.includes(u)) instagramUrls.push(u);
+    }
+    if (badInstagram.length) warnings.push(`行 ${rowNo}: Instagram「${badInstagram.join(" ")}」の形式が不正なためリンクを出しません`);
+    const instagramUrl = instagramUrls[0] ?? null;
 
     works.push({
       id,
@@ -156,6 +167,7 @@ export function rowsToWorks(rows, { term } = {}) {
       title: clip(title, LIMITS.title, "作品名", rowNo, warnings),
       comment: clip(get(r, "comment"), LIMITS.comment, "ひとこと", rowNo, warnings),
       instagramUrl,
+      instagramUrls,
       term: get(r, "term").trim() || term || "",
     });
   });
