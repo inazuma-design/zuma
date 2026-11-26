@@ -224,3 +224,13 @@ test("一覧のカード: Instagram はリンク（作品ページを見る・�
   assert.match(cards[1], /<p class="work-comment"><\/p>/, "ひとことが無くても段は残す（高さをそろえるため）");
   assert.match(cards[1], /<div class="work-sns"><\/div>/, "Instagram が無くても段は残す");
 });
+
+test("一覧: 各作品の後ろに行の区切り（読み上げでは無視）を置く。どれを線として見せるかは CSS が列の数で決める", () => {
+  const works = ["a", "b", "c", "d"].map((k) => work({ id: k, slug: `slug${k.repeat(6)}` }));
+  const html = renderIndex({ config, works, urls });
+  const seps = html.match(/<li class="work-sep" aria-hidden="true"><\/li>/g) || [];
+  assert.equal(seps.length, 4);
+  const grid = html.slice(html.indexOf('<ul class="work-grid"'), html.indexOf("</ul>", html.indexOf('<ul class="work-grid"')));
+  const order = grid.match(/class="work-(card|sep)"/g).map((m) => m.slice(12, -1));
+  assert.deepEqual(order, ["card", "sep", "card", "sep", "card", "sep", "card", "sep"], "作品と区切りが交互");
+});

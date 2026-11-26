@@ -169,6 +169,12 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
   color: var(--kaki-text); text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: 1px;
 }
 .work-zoom:hover { color: var(--sumi); }
+/* 行の区切り線。各作品の後ろに区切りを置き、行の終わりに当たるものだけを横いっぱいの薄い線として見せる
+   （1列のスマホでは出さない。2列は2作品ごと、3列は3作品ごと。最後の行の後ろには出さない） */
+.work-sep { display: none; grid-column: 1 / -1; height: 1px; background: var(--line); margin: 0 0 var(--card-gap); list-style: none; }
+@media (min-width: 600px) and (max-width: 999.98px) { .work-sep:nth-child(4n) { display: block; } }
+@media (min-width: 1000px) { .work-sep:nth-child(6n) { display: block; } }
+.work-sep:last-child { display: none !important; }
 /* Instagram はリンクの次の行。アカウントが複数あれば横に並べ、入りきらなければ折り返す */
 .work-sns { display: flex; flex-wrap: wrap; gap: 0 24px; align-items: center; padding-bottom: var(--card-gap); }
 .work-sns > .insta { min-height: 44px; }
