@@ -333,7 +333,8 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
    ノート PC に多い高さ 720px 前後の画面を目安に、トップを詰める。
    先生の作品を少し小さくして右の展示名の欄を広げ（展示名を 2 行に）、上下と段落の間の余白を詰める */
 @media (min-width: 1000px) {
-  .hero.has-art { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) auto; padding-top: 24px; padding-bottom: 16px; }
+  /* 先生の作品はできるだけ大きく: 右の文章の欄は展示名が 2 行に収まる幅に固定し、残りを全部作品に回す */
+  .hero.has-art { grid-template-columns: minmax(0, 1fr) minmax(0, 27rem) auto; column-gap: 40px; padding-top: 24px; padding-bottom: 16px; }
   .hero.has-art .hero-art-frame { padding: 10px; }
   .hero.has-art .hero-text { padding-top: 10px; }
   .hero.has-art .hero-title { line-height: 1.4; }
