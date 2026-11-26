@@ -8,6 +8,7 @@ import { isPublished, parseNow, formatJst } from "./publish.mjs";
 import { siteUrls } from "./urls.mjs";
 import { processWorkImage } from "./images.mjs";
 import { renderIndex, renderWork, renderTeaser, renderSitemap, render404 } from "./render.mjs";
+import { applyFontSubset } from "./fonts.mjs";
 import { createSource } from "./fetch.mjs";
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -103,6 +104,11 @@ export async function buildSite({ config, source, now, outDir, templatesDir = jo
       await writeFile(join(target, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${urls.abs("sitemap.xml")}\n`);
     }
   }
+
+  // 書体をサイトで使う文字だけに絞る（日本語書体の読み込みを 1MB 超 → 数百 KB に）
+  const scripts = await Promise.all(["lightbox.js", "share.js"].map((f) => readFile(join(templatesDir, f), "utf8")));
+  const font = await applyFontSubset(target, { scripts });
+  log.info(`書体: サイトで使う ${font.count} 文字だけに絞りました`);
 
   await rm(outDir, { recursive: true, force: true });
   await mkdir(dirname(outDir), { recursive: true });
