@@ -150,7 +150,7 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
   const representative = config.representativeWorkId ? works.find((w) => w.id === config.representativeWorkId) : null;
   const heroImage = heroArt ? urls.abs(`assets/${heroArt.ogp}`) : representative ? urls.abs(`assets/works/${representative.image.ogp}`) : null;
   const gallery = count
-    ? `<ul class="work-grid" id="work-grid">${works.map((w) => workCard(w, urls)).join("\n")}</ul>`
+    ? `<ul class="work-grid" id="work-grid">${works.map((w) => `${workCard(w, urls)}\n<li class="work-sep" aria-hidden="true"></li>`).join("\n")}</ul>`
     : `<p class="empty">展示準備中です。作品の掲載まで、もう少しお待ちください。</p>`;
 
   return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: heroImage, urls, assetVersion, noindex })}
