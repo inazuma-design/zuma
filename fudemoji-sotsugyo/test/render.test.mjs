@@ -234,3 +234,15 @@ test("一覧: 各作品の後ろに行の区切り（読み上げでは無視）
   const order = grid.match(/class="work-(card|sep)"/g).map((m) => m.slice(12, -1));
   assert.deepEqual(order, ["card", "sep", "card", "sep", "card", "sep", "card", "sep"], "作品と区切りが交互");
 });
+
+test("作品名: 英語など空白で区切る言葉の続きはひとまとまり（kw）にし、途中で改行させない", () => {
+  const t = "Mahalo i ka hui \u02BBana   出逢いに感謝";
+  const html = renderIndex({ config, works: [work({ title: t })], urls });
+  assert.match(html, /<h3 class="work-title"><a [^>]*><span class="kw">Mahalo i ka hui \u02BBana<\/span>   出逢いに感謝<\/a><\/h3>/);
+  const page = renderWork({ config, work: work({ title: t }), prev: null, next: null, urls, index: 0, total: 1 });
+  assert.match(page, /<h1 class="work-page-title"><span class="kw">Mahalo i ka hui \u02BBana<\/span>   出逢いに感謝<\/h1>/);
+  const jp = renderIndex({ config, works: [work({ title: "一歩前進" })], urls });
+  assert.ok(jp.includes(">一歩前進</a></h3>"), "日本語だけの作品名はそのまま");
+  const esc = renderIndex({ config, works: [work({ title: "<b> & </b> 春" })], urls });
+  assert.ok(!esc.includes("<b>") && esc.includes("&lt;b&gt;"), "HTML は無害化する");
+});
