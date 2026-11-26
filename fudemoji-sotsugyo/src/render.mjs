@@ -47,6 +47,23 @@ function titleHtml(title) {
     .join("");
 }
 
+/**
+ * 作品名。英語・ハワイ語など空白で区切る言葉の続き（例「Mahalo i ka hui ʻana」）をひとまとまり（.kw）にし、
+ * 見出しの行の長さをそろえる指定（text-wrap: balance）が言葉の途中で折らないようにする。日本語の部分はそのまま。
+ */
+const LATIN_WORD = "[A-Za-z0-9\\u00C0-\\u024F\\u02B0-\\u02FF\\u2018\\u2019'.,!?&:;()\\-]+";
+const LATIN_RUN = new RegExp(`${LATIN_WORD}(?:[ \\t]+${LATIN_WORD})+`, "g");
+function workTitleHtml(title) {
+  const s = String(title ?? "");
+  let out = "";
+  let last = 0;
+  for (const m of s.matchAll(LATIN_RUN)) {
+    out += escapeHtml(s.slice(last, m.index)) + `<span class="kw">${escapeHtml(m[0])}</span>`;
+    last = m.index + m[0].length;
+  }
+  return out + escapeHtml(s.slice(last));
+}
+
 function publishDateLabel(publishAt) {
   const d = new Date(publishAt);
   return new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", month: "long", day: "numeric" }).format(d);
@@ -130,7 +147,7 @@ function workCard(w, urls) {
     <img src="${attr(urls.path(`assets/works/${img.thumb}`))}" srcset="${attr(urls.path(`assets/works/${img.thumb}`))} 640w, ${attr(urls.path(`assets/works/${img.full}`))} 1600w" sizes="(min-width: 1000px) 340px, (min-width: 600px) 46vw, 92vw" width="${img.thumbWidth}" height="${img.thumbHeight}" alt="${attr(w.nickname)}さんの作品「${attr(w.title)}」" loading="lazy" decoding="async" data-full="${attr(urls.path(`assets/works/${img.full}`))}" data-full-width="${img.width}" data-full-height="${img.height}">
   </a>
   <div class="work-caption">
-    <h3 class="work-title"><a href="${attr(href)}">${escapeHtml(w.title)}</a></h3>
+    <h3 class="work-title"><a href="${attr(href)}">${workTitleHtml(w.title)}</a></h3>
     <p class="work-author">${escapeHtml(w.nickname)}</p>
     <p class="work-comment">${w.comment ? nl2br(w.comment) : ""}</p>
     <div class="work-actions">
@@ -225,7 +242,7 @@ export function renderWork({ config, work, prev, next, urls, index, total, asset
     <figcaption class="work-stage-tools"><button type="button" class="open-full" data-full="${attr(urls.path(`assets/works/${img.full}`))}">画面いっぱいで見る（指で拡大できます）</button></figcaption>
   </figure>
   <section class="work-info">
-    <h1 class="work-page-title">${escapeHtml(work.title)}</h1>
+    <h1 class="work-page-title">${workTitleHtml(work.title)}</h1>
     <p class="work-page-author">${escapeHtml(work.nickname)}</p>
     ${work.comment ? `<div class="work-page-comment"><p>${nl2br(work.comment)}</p></div>` : ""}
     <div class="work-page-actions">
