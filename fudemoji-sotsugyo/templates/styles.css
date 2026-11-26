@@ -215,6 +215,14 @@ main > section { padding: 44px var(--gutter); max-width: var(--max); margin: 0 a
 .greeting-body { margin: 20px 0 0; max-width: 36em; }
 .greeting-body p { margin: 0; }
 .greeting-body p + p { margin-top: 1.2em; }
+/* PC: ごあいさつと「それぞれの一筆」は見出しと文章の段を中央に置く（文章の中は読みやすい左そろえのまま）。
+   ごあいさつから作品一覧の見出しまでの空きを詰める */
+@media (min-width: 1000px) {
+  .greeting { padding-bottom: 8px; }
+  .greeting .section-title, .works > .section-title, .works > .count-line { text-align: center; }
+  .greeting-body, .works > .gallery-lead { margin-left: auto; margin-right: auto; }
+  .works > .gallery-lead { text-align: center; }
+}
 .course { border-top: 1px solid var(--line); }
 .course-body { margin: 16px 0 0; max-width: 36em; color: var(--sumi); }
 .course-links { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
