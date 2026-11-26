@@ -208,3 +208,19 @@ test("Instagram が複数あれば、それぞれ @アカウント名 で見分�
   const one = renderWork({ config, work: work(), prev: null, next: null, urls, index: 0, total: 1 });
   assert.match(one, /<span>Instagram<\/span><\/a>/);
 });
+
+test("一覧のカード: Instagram はリンク（作品ページを見る・拡大して見る）の次の行に出し、どのカードも同じ6段で高さをそろえる", () => {
+  const html = renderIndex({ config, works: [work(), work({ id: "b", slug: "slugbbbbbb", title: "海", nickname: "たろう", comment: "", instagramUrl: null, instagramUrls: [] })], urls });
+  const cards = html.split('<li class="work-card">').slice(1);
+  assert.equal(cards.length, 2);
+  for (const c of cards) {
+    const order = ["work-frame", "work-title", "work-author", "work-comment", "work-actions", "work-sns"].map((k) => c.indexOf(`class="${k}"`));
+    assert.ok(order.every((i) => i > 0), `6段すべてある: ${order}`);
+    assert.deepEqual([...order].sort((a, b) => a - b), order, "この順番");
+    const actions = c.slice(c.indexOf('class="work-actions"'), c.indexOf('class="work-sns"'));
+    assert.ok(!actions.includes('class="insta"'), "Instagram はリンクの行に入れない");
+  }
+  assert.ok(cards[0].slice(cards[0].indexOf('class="work-sns"')).includes('class="insta"'), "Instagram は次の行（work-sns）に出す");
+  assert.match(cards[1], /<p class="work-comment"><\/p>/, "ひとことが無くても段は残す（高さをそろえるため）");
+  assert.match(cards[1], /<div class="work-sns"><\/div>/, "Instagram が無くても段は残す");
+});
