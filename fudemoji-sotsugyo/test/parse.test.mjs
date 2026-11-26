@@ -128,3 +128,32 @@ test("作品画像の欄が Drive のリンクなら imageRef にもリンクが
   assert.equal(works[0].driveFileId, "fileZ");
   assert.equal(works[0].id, "fileZ");
 });
+
+test("Instagram 欄に複数のアカウント（改行・空白・読点区切り）があれば全部リンクにする", () => {
+  const { works, warnings } = parse([row({ insta: "@shiromiso_bluestudio\n@shiromiso_moji_to_iromiso" })]);
+  assert.equal(warnings.length, 0);
+  assert.deepEqual(works[0].instagramUrls, [
+    "https://www.instagram.com/shiromiso_bluestudio/",
+    "https://www.instagram.com/shiromiso_moji_to_iromiso/",
+  ]);
+  assert.equal(works[0].instagramUrl, "https://www.instagram.com/shiromiso_bluestudio/", "1つ目は従来の instagramUrl にも入る");
+  const b = parse([row({ insta: "@aaa、 https://www.instagram.com/bbb/ @aaa" })]).works[0];
+  assert.deepEqual(b.instagramUrls, ["https://www.instagram.com/aaa/", "https://www.instagram.com/bbb/"], "読点・空白で区切り、重複は1つにする");
+});
+
+test("Instagram 欄の一部だけ不正なら、正しいものはリンクにし、不正な部分だけ警告する", () => {
+  const { works, warnings } = parse([row({ insta: "@good_one\n<script>" })]);
+  assert.deepEqual(works[0].instagramUrls, ["https://www.instagram.com/good_one/"]);
+  assert.equal(warnings.length, 1);
+  assert.match(warnings[0], /<script>/);
+  assert.ok(!warnings[0].includes("good_one"));
+});
+
+test("Instagram 欄が普通の文章なら、単語ごとにリンクを作らない（複数あるときは @ 付きか URL だけをアカウントとみなす）", () => {
+  const { works, warnings } = parse([row({ insta: "not a valid handle!" })]);
+  assert.deepEqual(works[0].instagramUrls, []);
+  assert.equal(works[0].instagramUrl, null);
+  assert.equal(warnings.length, 1);
+  const single = parse([row({ insta: "hana.ko" })]).works[0];
+  assert.deepEqual(single.instagramUrls, ["https://www.instagram.com/hana.ko/"], "1つだけなら @ なしの名前も従来どおり受け付ける");
+});

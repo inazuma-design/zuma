@@ -85,9 +85,20 @@ ${extraCss}
 </head>`;
 }
 
-function instagramLink(url, label) {
-  if (!url) return "";
-  return `<a class="insta" href="${attr(url)}" target="_blank" rel="noopener noreferrer" aria-label="${attr(label)}のInstagram"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg><span>Instagram</span></a>`;
+const INSTA_ICON = `<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg>`;
+
+/** 作品の Instagram リンク。1つなら「Instagram」、複数なら見分けがつくよう「@アカウント名」で並べる。 */
+function instagramLinks(work) {
+  const list = work.instagramUrls?.length ? work.instagramUrls : work.instagramUrl ? [work.instagramUrl] : [];
+  if (list.length === 0) return "";
+  const many = list.length > 1;
+  return list
+    .map((url) => {
+      const handle = "@" + (url.match(/instagram\.com\/([^/]+)/)?.[1] ?? "");
+      const aria = many ? `${work.nickname}のInstagram（${handle}）` : `${work.nickname}のInstagram`;
+      return `<a class="insta" href="${attr(url)}" target="_blank" rel="noopener noreferrer" aria-label="${attr(aria)}">${INSTA_ICON}<span>${escapeHtml(many ? handle : "Instagram")}</span></a>`;
+    })
+    .join("\n      ");
 }
 
 
@@ -125,7 +136,7 @@ function workCard(w, urls) {
     <div class="work-actions">
       <a class="work-link" href="${attr(href)}">作品ページを見る</a>
       <button type="button" class="work-zoom" data-lightbox="${attr(w.slug)}">拡大して見る</button>
-      ${instagramLink(w.instagramUrl, w.nickname)}
+      ${instagramLinks(w)}
     </div>
   </div>
 </li>`;
@@ -219,7 +230,7 @@ export function renderWork({ config, work, prev, next, urls, index, total, asset
     ${work.comment ? `<div class="work-page-comment"><p>${nl2br(work.comment)}</p></div>` : ""}
     <div class="work-page-actions">
       <button type="button" class="share" data-share-url="${attr(canonical)}" data-share-title="${attr(title)}">この作品を共有</button>
-      ${instagramLink(work.instagramUrl, work.nickname)}
+      ${instagramLinks(work)}
     </div>
     <p class="share-note" aria-live="polite" hidden></p>
   </section>
