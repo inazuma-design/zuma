@@ -175,7 +175,6 @@ export function renderIndex({ config, works, urls, assetVersion = "", heroArt = 
 <a class="skip" href="#works">作品一覧へ</a>
 <header class="hero${heroArt ? " has-art" : ""}">
   <div class="hero-text">
-    <p class="hero-kicker">${escapeHtml(config.term)}</p>
     <h1 class="hero-title">${titleHtml(config.title)}</h1>
     ${config.hero?.subheadline ? `<p class="hero-sub">${escapeHtml(config.hero.subheadline)}</p>` : ""}
     ${config.hero?.description ? `<p class="hero-desc">${nl2br(config.hero.description)}</p>` : ""}
@@ -277,7 +276,6 @@ export function renderTeaser({ config, urls, assetVersion = "", heroArt = null }
   return `${head({ title: config.title, description, canonical: urls.abs(""), ogImage: heroArt ? urls.abs(`assets/${heroArt.ogp}`) : null, urls, assetVersion })}
 <body class="page-teaser">
 <main class="teaser${heroArt ? " has-art" : ""}">
-  <p class="hero-kicker">${escapeHtml(config.term)}</p>
   <h1 class="hero-title">${titleHtml(config.title)}</h1>
   ${heroArtFigure(heroArt, urls)}
   <p class="teaser-date"><span class="teaser-date-num">${escapeHtml(dateLabel)}</span>公開予定</p>
