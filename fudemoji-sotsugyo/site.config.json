@@ -24,8 +24,9 @@
   "greeting": "このたび、デジタル筆文字作家養成講座2期生の卒業制作作品をご紹介できることを、とても嬉しく思います。\n\n講座が始まった頃は、筆文字を書くことにも、初めて扱うiPadにも、期待と不安が入⁠り⁠混⁠じ⁠っ⁠ていた方が多かったと思います。受講生の皆さんは、この6ヶ月間でさまざまな文字の書き方や表⁠現⁠方⁠法、アプリの使い方などを学び、一⁠歩⁠ず⁠つ自分らしい作品づくりに取⁠り⁠組⁠ん⁠でこられました。\n\n今回の卒業制作には、そんな皆さんの努力や挑戦、そして作品に込めた思いがぎゅっと詰まっています。何か心に響くものを感じていただけたら嬉しいです。ぜひ、ゆっくりとお楽しみください。",
   "courseIntro": "",
   "links": {
-    "line": "https://lin.ee/LUsnOJX",
-    "homepage": "https://fudemojinigaoesihira.com/",
+    "course": "https://l.fudemoji-artist.com/p/01",
+    "line": "",
+    "homepage": "",
     "instagram": "https://www.instagram.com/hirac_han/"
   },
   "baseUrl": "https://inazuma-design.github.io/zuma/",
@@ -33,13 +34,13 @@
   "_todo": [
     "hero.headline / hero.subheadline: 先生の確定キャッチコピー（2026-11-24 受領）。hero.description は仮の文面のまま",
     "courseIntro: 講座紹介の文面（受領するまで空のまま。リンクだけは表示される）",
-    "links.line: 先生のメルマガに記載の「デジタル筆文字公式LINE」。先生に最新のURLを確認する",
     "customDomain: 先生のドメイン利用が確定し DNS が設定できたら sotsugyo.fudemojinigaoesihira.com を入れる",
     "baseUrl: 専用リポジトリ inazuma-design/fudemoji-sotsugyo へ移したら https://inazuma-design.github.io/fudemoji-sotsugyo/ に戻す（GitHub Pages の URL はリポジトリ名で決まる）",
     "digitalIntro / galleryLead: 仮の文面。先生の確認後に確定する（技術や工程の断定はしない）",
     "representativeWorkId: トップページの OGP 画像に使う代表作品。作者の同意を得てから、シートの作品ID（Drive のファイルID または 作品ID 列の値）を入れる。空ならトップに画像は出さない",
     "hero.image.file: 先生の作品をファーストビューに出す。画像を共有フォルダ内のサブフォルダ「先生」に入れ、そのファイル名（例 hira_春.jpg）を書く。caption は作品名に合わせて直す",
-    "earlyPreview: 先生の確認のため 2026-11-24 から先行公開中。公開日（publishAt）までは検索よけ（noindex・robots Disallow）が付き、公開日を過ぎると自動で外れる。先行公開をやめるなら false にする"
+    "earlyPreview: 先生の確認のため 2026-11-24 から先行公開中。公開日（publishAt）までは検索よけ（noindex・robots Disallow）が付き、公開日を過ぎると自動で外れる。先行公開をやめるなら false にする",
+    "links: 先生の依頼（2026-11-27）で最後の案内を「講座のご案内はこちら」（講座LP）と Instagram の 2 つに。公式LINE（https://lin.ee/LUsnOJX）・ホームページ（https://fudemojinigaoesihira.com/）は空にして外した。戻すときは URL を入れる"
   ],
   "_form": {
     "edit": "https://docs.google.com/forms/d/1SKf_l4uyETOUf8DR0UnDyq1dfO48XEE0NlfZidBcGLY/edit",

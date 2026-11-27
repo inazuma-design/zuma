@@ -104,6 +104,21 @@ ${extraCss}
 
 const INSTA_ICON = `<svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor"/></svg>`;
 
+/**
+ * ページ最後の案内ボタン。講座の LP・公式LINE・ホームページのうち設定があるものを並べ、
+ * 1つ目を主ボタン（塗り）、残りを枠線にする。Instagram は控えめな文字リンクで最後に置く。空の設定は出さない。
+ */
+function courseLinks(links = {}) {
+  const items = [
+    [links.course, "講座のご案内はこちら"],
+    [links.line, "公式LINE"],
+    [links.homepage, "ホームページ"],
+  ].filter(([url]) => url);
+  const out = items.map(([url, label], i) => `<li><a class="${i === 0 ? "btn-primary" : "btn-secondary"}" href="${attr(url)}" target="_blank" rel="noopener noreferrer">${label}</a></li>`);
+  if (links.instagram) out.push(`<li><a class="btn-text" href="${attr(links.instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a></li>`);
+  return out.join("\n    ");
+}
+
 /** 作品の Instagram リンク。1つなら「Instagram」、複数なら見分けがつくよう「@アカウント名」で並べる。 */
 function instagramLinks(work) {
   const list = work.instagramUrls?.length ? work.instagramUrls : work.instagramUrl ? [work.instagramUrl] : [];
@@ -201,9 +216,7 @@ ${config.courseIntro || config.links ? `<section class="course" id="course" aria
   <h2 id="course-heading" class="section-title">${escapeHtml(config.courseHeading || "あなたも、デジタル筆文字の世界へ。")}</h2>
   ${config.courseIntro ? `<p class="course-body">${nl2br(config.courseIntro)}</p>` : ""}
   <ul class="course-links">
-    ${config.links?.line ? `<li><a class="btn-primary" href="${attr(config.links.line)}" target="_blank" rel="noopener noreferrer">公式LINE</a></li>` : ""}
-    ${config.links?.homepage ? `<li><a class="btn-secondary" href="${attr(config.links.homepage)}" target="_blank" rel="noopener noreferrer">ホームページ</a></li>` : ""}
-    ${config.links?.instagram ? `<li><a class="btn-text" href="${attr(config.links.instagram)}" target="_blank" rel="noopener noreferrer">Instagram</a></li>` : ""}
+    ${courseLinks(config.links)}
   </ul>
 </section>` : ""}
 </main>

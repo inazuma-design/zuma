@@ -252,3 +252,12 @@ test("トップと予告ページ: 展示名の上の小見出し（講座・期
   const teaser = renderTeaser({ config, urls });
   for (const h of [html, teaser]) assert.ok(!h.includes('class="hero-kicker"'));
 });
+
+test("トップページ: 講座の LP（links.course）があれば「講座のご案内はこちら」を主ボタンにし、空のリンクは出さない", () => {
+  const html = renderIndex({ config: { ...config, links: { course: "https://l.fudemoji-artist.com/p/01", line: "", homepage: "", instagram: "https://www.instagram.com/hirac_han/" } }, works: [work()], urls });
+  const course = html.slice(html.indexOf('<ul class="course-links">'), html.indexOf("</ul>", html.indexOf('<ul class="course-links">')));
+  assert.match(course, /<a class="btn-primary" href="https:\/\/l\.fudemoji-artist\.com\/p\/01" target="_blank" rel="noopener noreferrer">講座のご案内はこちら<\/a>/);
+  assert.match(course, /<a class="btn-text" href="https:\/\/www\.instagram\.com\/hirac_han\/"[^>]*>Instagram<\/a>/);
+  assert.ok(!course.includes("公式LINE") && !course.includes("ホームページ"), "公式LINE・ホームページは出さない");
+  assert.equal((course.match(/<li>/g) || []).length, 2);
+});
